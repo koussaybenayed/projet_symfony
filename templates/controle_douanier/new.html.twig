@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ControleDouanier{% endblock %}
+
+{% block body %}
+    <h1>Create new ControleDouanier</h1>
+
+    {{ include('controle_douanier/_form.html.twig') }}
+
+    <a href="{{ path('app_controle_douanier_index') }}">back to list</a>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ControleDouanier index{% endblock %}
+
+{% block body %}
+    <h1>ControleDouanier index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id_controle</th>
+                <th>Id_livraisons</th>
+                <th>Pays_douane</th>
+                <th>Statut</th>
+                <th>Date_controle</th>
+                <th>Commentaires</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for controle_douanier in controle_douaniers %}
+            <tr>
+                <td>{{ controle_douanier.idControle }}</td>
+                <td>{{ controle_douanier.livraison.idLivraisons }}</td> {# assuming livraison has getIdLivraisons() #}
+                <td>{{ controle_douanier.paysDouane }}</td>
+                <td>{{ controle_douanier.statut }}</td>
+                <td>{{ controle_douanier.dateControle ? controle_douanier.dateControle|date('Y-m-d') : '' }}</td>
+                <td>{{ controle_douanier.commentaires }}</td>
+                <td>
+                    <a href="{{ path('app_controle_douanier_show', {'id_controle': controle_douanier.idControle}) }}">show</a>
+                    <a href="{{ path('app_controle_douanier_edit', {'id_controle': controle_douanier.idControle}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_controle_douanier_new') }}">Create new</a>
+{% endblock %}

@@ -16,16 +16,16 @@ class Livraison
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    private ?int $id_livraisons = null;
 
-    public function getId(): ?int
+    public function getId_livraisons(): ?int
     {
-        return $this->id;
+        return $this->id_livraisons;
     }
 
-    public function setId(int $id): self
+    public function setId_livraisons(int $id_livraisons): self
     {
-        $this->id = $id;
+        $this->id_livraisons = $id_livraisons;
         return $this;
     }
 
@@ -71,19 +71,37 @@ class Livraison
         return $this;
     }
 
-    #[ORM\OneToOne(targetEntity: Coli::class, inversedBy: 'livraison')]
-    #[ORM\JoinColumn(name: 'colis_id', referencedColumnName: 'id', unique: true)]
-    private ?Coli $coli = null;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $poids_colis = null;
 
-    public function getColi(): ?Coli
+    public function getPoids_colis(): ?int
     {
-        return $this->coli;
+        return $this->poids_colis;
     }
 
-    public function setColi(?Coli $coli): self
+    public function setPoids_colis(?int $poids_colis): self
     {
-        $this->coli = $coli;
+        $this->poids_colis = $poids_colis;
         return $this;
+    }
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $destination_status = null;
+
+    public function getDestination_status(): ?string
+    {
+        return $this->destination_status;
+    }
+
+    public function setDestination_status(?string $destination_status): self
+    {
+        $this->destination_status = $destination_status;
+        return $this;
+    }
+
+    public function getIdLivraisons(): ?int
+    {
+        return $this->id_livraisons;
     }
 
     public function getEstimatedDelivery(): ?\DateTimeInterface
@@ -118,6 +136,30 @@ class Livraison
     public function setCreatedAt(\DateTimeInterface $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getPoidsColis(): ?int
+    {
+        return $this->poids_colis;
+    }
+
+    public function setPoidsColis(?int $poids_colis): static
+    {
+        $this->poids_colis = $poids_colis;
+
+        return $this;
+    }
+
+    public function getDestinationStatus(): ?string
+    {
+        return $this->destination_status;
+    }
+
+    public function setDestinationStatus(?string $destination_status): static
+    {
+        $this->destination_status = $destination_status;
 
         return $this;
     }
