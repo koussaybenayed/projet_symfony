@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Reclamation{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .is-invalid {
+            border-color: #dc3545;
+        }
+        .invalid-feedback {
+            display: block;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #dc3545;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+      
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        
+            {# Description Field #}
+            <div class="mb-3">
+                {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.description, {
+                    'attr': {
+                        'class': 'form-control' ~ (form.description.vars.errors ? ' is-invalid' : '')
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.description) }}
+                </div>
+            </div>
+
+            {# Date Field #}
+            <div class="mb-3">
+                {{ form_label(form.date_reclamation, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.date_reclamation, {
+                    'attr': {
+                        'class': 'form-control' ~ (form.date_reclamation.vars.errors ? ' is-invalid' : '')
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.date_reclamation) }}
+                </div>
+            </div>
+
+            {# Status Field #}
+            <div class="mb-3">
+                {{ form_label(form.status, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.status, {
+                    'attr': {
+                        'class': 'form-control' ~ (form.status.vars.errors ? ' is-invalid' : '')
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.status) }}
+                </div>
+            </div>
+
+            {# User Field #}
+            <div class="mb-3">
+                {{ form_label(form.user, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.user, {
+                    'attr': {
+                        'class': 'form-select' ~ (form.user.vars.errors ? ' is-invalid' : '')
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.user) }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
