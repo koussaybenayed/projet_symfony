@@ -254,7 +254,10 @@ class User
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Facturisation::class, mappedBy: 'user')]
+#[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'facturisations')]
+#[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id')]
+private ?User $user = null;
+#[ORM\OneToMany(targetEntity: Facturisation::class, mappedBy: 'user')]
     private Collection $facturisations;
 
     /**

@@ -19,7 +19,7 @@
 
 {% block body %}
     <div class="container mt-4">
-      
+        <h1>Create new Reclamation</h1>
 
         {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
         
@@ -36,7 +36,7 @@
                 </div>
             </div>
 
-            {# Date Field #}
+            {# Date Field - Changed to use form_widget directly #}
             <div class="mb-3">
                 {{ form_label(form.date_reclamation, null, {'label_attr': {'class': 'form-label'}}) }}
                 {{ form_widget(form.date_reclamation, {

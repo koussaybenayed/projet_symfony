@@ -4,9 +4,7 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
+use DateTimeInterface;  // Use PHP's built-in DateTimeInterface
 use App\Repository\FacturisationRepository;
 
 #[ORM\Entity(repositoryClass: FacturisationRepository::class)]
@@ -57,15 +55,15 @@ class Facturisation
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $payment_date = null;
+    #[ORM\Column(type: 'datetime', nullable: false)]
+    private ?\DateTimeInterface $payment_date = null; // Use PHP's DateTimeInterface
 
-    public function getPayment_date(): ?string
+    public function getPayment_date(): ?\DateTimeInterface
     {
         return $this->payment_date;
     }
 
-    public function setPayment_date(string $payment_date): self
+    public function setPayment_date(\DateTimeInterface $payment_date): self  // Accept DateTimeInterface
     {
         $this->payment_date = $payment_date;
         return $this;
@@ -142,16 +140,15 @@ class Facturisation
         return $this;
     }
 
-    public function getPaymentDate(): ?string
+    public function getPaymentDate(): ?\DateTimeInterface
     {
         return $this->payment_date;
     }
 
-    public function setPaymentDate(string $payment_date): static
+    public function setPaymentDate(\DateTimeInterface $payment_date): static
     {
         $this->payment_date = $payment_date;
 
         return $this;
     }
-
 }

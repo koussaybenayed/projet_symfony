@@ -22,6 +22,10 @@ class Livraison
     {
         return $this->id_livraisons;
     }
+    public function getId(): ?int
+{
+    return $this->id_livraisons;
+}
 
     public function setId_livraisons(int $id_livraisons): self
     {

@@ -2,12 +2,11 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
 use App\Repository\ReductionRepository;
+use DateTimeInterface;
 
 #[ORM\Entity(repositoryClass: ReductionRepository::class)]
 #[ORM\Table(name: 'reductions')]
@@ -18,19 +17,34 @@ class Reduction
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $code = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: false)]
+    private ?float $discountAmount = null;
+
+    #[ORM\Column(type: 'datetime', nullable: false)]
+    private ?DateTimeInterface $expirationDate = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $conditionText = null;
+
+    #[ORM\Column(type: 'datetime', nullable: false)]
+    private ?DateTimeInterface $createdAt = null;
+
+    #[ORM\OneToMany(targetEntity: Billet::class, mappedBy: 'reduction')]
+    private Collection $billets;
+
+    public function __construct()
+    {
+        $this->billets = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable(); // Auto-set creation date
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
-
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $code = null;
 
     public function getCode(): ?string
     {
@@ -43,129 +57,72 @@ class Reduction
         return $this;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: false)]
-    private ?float $discount_amount = null;
-
-    public function getDiscount_amount(): ?float
+    public function getDiscountAmount(): ?float
     {
-        return $this->discount_amount;
+        return $this->discountAmount;
     }
 
-    public function setDiscount_amount(float $discount_amount): self
+    public function setDiscountAmount(float $discountAmount): self
     {
-        $this->discount_amount = $discount_amount;
+        $this->discountAmount = $discountAmount;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $expiration_date = null;
-
-    public function getExpiration_date(): ?string
+    public function getExpirationDate(): ?DateTimeInterface
     {
-        return $this->expiration_date;
+        return $this->expirationDate;
     }
 
-    public function setExpiration_date(string $expiration_date): self
+    public function setExpirationDate(DateTimeInterface $expirationDate): self
     {
-        $this->expiration_date = $expiration_date;
+        $this->expirationDate = $expirationDate;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $condition = null;
-
-    public function getCondition(): ?string
+    public function getConditionText(): ?string
     {
-        return $this->condition;
+        return $this->conditionText;
     }
 
-    public function setCondition(?string $condition): self
+    public function setConditionText(?string $conditionText): self
     {
-        $this->condition = $condition;
+        $this->conditionText = $conditionText;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $created_at = null;
-
-    public function getCreated_at(): ?string
+    public function getCreatedAt(): ?DateTimeInterface
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreated_at(string $created_at): self
+    public function setCreatedAt(DateTimeInterface $createdAt): self
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Billet::class, mappedBy: 'reduction')]
-    private Collection $billets;
-
-    public function __construct()
-    {
-        $this->billets = new ArrayCollection();
-    }
-
-    /**
-     * @return Collection<int, Billet>
-     */
     public function getBillets(): Collection
     {
-        if (!$this->billets instanceof Collection) {
-            $this->billets = new ArrayCollection();
-        }
         return $this->billets;
     }
 
     public function addBillet(Billet $billet): self
     {
-        if (!$this->getBillets()->contains($billet)) {
-            $this->getBillets()->add($billet);
+        if (!$this->billets->contains($billet)) {
+            $this->billets->add($billet);
+            $billet->setReduction($this);
         }
         return $this;
     }
 
     public function removeBillet(Billet $billet): self
     {
-        $this->getBillets()->removeElement($billet);
+        if ($this->billets->removeElement($billet)) {
+            // set the owning side to null (unless already changed)
+            if ($billet->getReduction() === $this) {
+                $billet->setReduction(null);
+            }
+        }
         return $this;
     }
-
-    public function getDiscountAmount(): ?string
-    {
-        return $this->discount_amount;
-    }
-
-    public function setDiscountAmount(string $discount_amount): static
-    {
-        $this->discount_amount = $discount_amount;
-
-        return $this;
-    }
-
-    public function getExpirationDate(): ?string
-    {
-        return $this->expiration_date;
-    }
-
-    public function setExpirationDate(string $expiration_date): static
-    {
-        $this->expiration_date = $expiration_date;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?string
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(string $created_at): static
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
 }

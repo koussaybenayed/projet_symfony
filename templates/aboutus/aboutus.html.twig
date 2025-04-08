@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}À propos de TransportApp{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h4 class="page-title">À propos de TransportApp</h4>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Qui sommes-nous ?</h5>
+                <p class="card-text">
+                    TransportApp est une plateforme complète de gestion logistique conçue pour révolutionner la manière dont les entreprises gèrent
+                    les livraisons, le service client et les opérations financières. Notre solution intègre quatre modules clés :
+                    <strong>Gestion des Livraisons</strong>, <strong>Résolution des Réclamations</strong>, <strong>Gestion des Remises</strong>,
+                    et <strong>Système de Facturation</strong> en une expérience unifiée.
+                </p>
+
+                <h5 class="mt-4">Notre Mission</h5>
+                <p class="card-text">
+                    Transformer la logistique transport grâce à une technologie qui simplifie les opérations, améliore la satisfaction client
+                    et stimule la croissance des entreprises. Nous comblons le fossé entre les prestataires de services et les clients avec le suivi en temps réel,
+                    une résolution efficace des réclamations et une facturation transparente.
+                </p>
+
+                <h5 class="mt-4">Fonctionnalités Clés</h5>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="feature-box">
+                            <h6><i class="fas fa-truck"></i> Gestion des Livraisons</h6>
+                            <p>Suivi en temps réel des colis, planification des livraisons et mises à jour de statut pour une visibilité complète des expéditions.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-box">
+                            <h6><i class="fas fa-comment-alt"></i> Système de Réclamations</h6>
+                            <p>Soumission, suivi et résolution simplifiés des réclamations avec notifications automatisées.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="feature-box">
+                            <h6><i class="fas fa-percent"></i> Gestion des Remises</h6>
+                            <p>Configurations flexibles des réductions et offres promotionnelles pour renforcer la fidélité des clients.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="feature-box">
+                            <h6><i class="fas fa-file-invoice-dollar"></i> Système de Facturation</h6>
+                            <p>Facturation automatisée, suivi des paiements et reporting financier pour un contrôle fiscal complet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="mt-4">Notre Équipe</h5>
+                <div class="team-members row">
+                    <div class="col-md-2 col-sm-4 text-center">
+                        <div class="team-member">
+                            <div class="avatar avatar-lg">L</div>
+                            <h6>Lina</h6>
+                            <p class="text-muted">Gestion  Livraisons</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-4 text-center">
+                        <div class="team-member">
+                            <div class="avatar avatar-lg">M</div>
+                            <h6>Mariem</h6>
+                            <p class="text-muted">Gestion Facturisation</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-4 text-center">
+                        <div class="team-member">
+                            <div class="avatar avatar-lg">S</div>
+                            <h6>Skander</h6>
+                            <p class="text-muted">Gestion Reclamation</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-4 text-center">
+                        <div class="team-member">
+                            <div class="avatar avatar-lg">B</div>
+                            <h6>Balkiss</h6>
+                            <p class="text-muted">Gestion billets</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-4 text-center">
+                        <div class="team-member">
+                            <div class="avatar avatar-lg">K</div>
+                            <h6>Koussay</h6>
+                            <p class="text-muted">Gestionnaire User</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="mt-4">Pourquoi choisir TransportApp ?</h5>
+                <ul class="benefits-list">
+                    <li><i class="fas fa-check-circle text-success"></i> Traitement des livraisons 30% plus rapide</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Réduction de 75% du temps de résolution des réclamations</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Configurations de remises flexibles</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Facturation automatisée avec multiples options de paiement</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Support client 24/7</li>
+                </ul>
+
+                <h5 class="mt-4">Contactez-nous</h5>
+                <div class="contact-info">
+                    <p><i class="fas fa-envelope"></i> Email : support@transportapp.com</p>
+                    <p><i class="fas fa-phone"></i> Téléphone : +216 12 345 678</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Adresse : Rue Digitale, Tunis, Tunisie</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .feature-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        height: 100%;
+    }
+    .feature-box h6 i {
+        margin-right: 8px;
+        color: #177dff;
+    }
+    .team-member {
+        margin-bottom: 15px;
+    }
+    .avatar {
+        width: 60px;
+        height: 60px;
+        background: #177dff;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-weight: bold;
+        font-size: 24px;
+    }
+    .benefits-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    .benefits-list li {
+        padding: 5px 0;
+    }
+    .contact-info p i {
+        width: 20px;
+        margin-right: 10px;
+        text-align: center;
+    }
+</style>
+{% endblock %}

@@ -13,6 +13,7 @@ $dbPort = 3306;
 $namespace = 'App\\Entity';
 $outputDir = __DIR__ . '/src/Entity';
 
+
 // Create output directory if it doesn't exist
 if (!is_dir($outputDir)) {
     mkdir($outputDir, 0777, true);

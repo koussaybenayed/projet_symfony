@@ -33,7 +33,7 @@ class ReclamationType extends AbstractType
                         'message' => 'Description cannot be blank'
                     ]),
                     new Length([
-                        'min' => 5,
+                        'min' => 3,
                         'max' => 20,
                         'minMessage' => 'Description must be at least {{ limit }} characters',
                         'maxMessage' => 'Description cannot exceed {{ limit }} characters'
@@ -47,6 +47,8 @@ class ReclamationType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
+                    
+
                     
                 ],
                 'empty_data' => null,
@@ -69,7 +71,7 @@ class ReclamationType extends AbstractType
                         'message' => 'Status cannot be blank'
                     ]),
                     new Length([
-                        'min' => 5,
+                        'min' => 3,
                         'max' => 500,
                         'minMessage' => 'Status must be at least {{ limit }} characters',
                         'maxMessage' => 'Status cannot exceed {{ limit }} characters'
@@ -92,7 +94,7 @@ class ReclamationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Reclamation::class,
+            'data_class' => Reclamation::class, 
         ]);
     }
 }
