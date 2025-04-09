@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Livraison{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div class="page-btn">
+            <a href="{{ path('app_livraison_index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+        <div class="page-title">
+            <h4><i class="fas fa-plus-circle"></i> Créer une nouvelle livraison</h4>
+            <h6>Remplissez le formulaire pour ajouter une nouvelle livraison</h6>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-8 offset-lg-2">
+                    {{ include('livraison/_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            background-color: #ffffff !important;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .page-title h4 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .page-title h6 {
+            font-size: 14px;
+            color: #777;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 5px;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #5D78FF;
+            box-shadow: 0 0 0 0.2rem rgba(93, 120, 255, 0.25);
+        }
+        
+        .btn-submit {
+            background-color: #5D78FF;
+            color: white;
+            padding: 10px 25px;
+            font-weight: 500;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit:hover {
+            background-color: #4a63e0;
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+{% endblock %}

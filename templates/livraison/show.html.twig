@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails Livraison{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800"><i class="fas fa-truck me-2"></i>Détails Livraison</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_livraison_index') }}">Livraisons</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Statut: {{ livraison.destinationStatus|capitalize }}</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="btn-group">
+            <a href="{{ path('app_livraison_edit', {'id_livraisons': livraison.id_livraisons}) }}" 
+               class="btn btn-primary btn-icon-split">
+                <span class="icon"><i class="fas fa-edit"></i></span>
+                <span class="text">Modifier</span>
+            </a>
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Actions</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="{{ path('app_livraison_index') }}">
+                        <i class="fas fa-list me-2"></i>Retour à la liste
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    {{ include('livraison/_delete_form.html.twig') }}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informations sur la livraison</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="detail-item p-3 rounded-3">
+                        <h6 class="detail-label text-uppercase text-muted fw-bold small">Statut</h6>
+                        <div class="detail-value">
+                            <span class="badge fs-6 bg-{{ livraison.destinationStatus == 'delivered' ? 'success' : 
+                                (livraison.destinationStatus == 'pending' ? 'warning' : 
+                                (livraison.destinationStatus == 'cancelled' ? 'danger' : 'info')) }}">
+                                <i class="fas fa-{{ livraison.destinationStatus == 'delivered' ? 'check-circle' : 
+                                  (livraison.destinationStatus == 'pending' ? 'clock' : 
+                                  (livraison.destinationStatus == 'cancelled' ? 'times-circle' : 'info-circle')) }} me-1"></i>
+                                {{ livraison.destinationStatus|capitalize }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item p-3 rounded-3 mt-3">
+                        <h6 class="detail-label text-uppercase text-muted fw-bold small">Date estimation</h6>
+                        <p class="detail-value mb-0">
+                            {% if livraison.estimatedDelivery %}
+                                <i class="far fa-calendar-alt me-2"></i>{{ livraison.estimatedDelivery|date('d/m/Y') }}
+                            {% else %}
+                                <span class="text-muted">Non spécifiée</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="detail-item p-3 rounded-3">
+                        <h6 class="detail-label text-uppercase text-muted fw-bold small">Date création</h6>
+                        <p class="detail-value mb-0">
+                            <i class="far fa-clock me-2"></i>
+                            {{ livraison.createdAt ? livraison.createdAt|date('d/m/Y à H\\hi') : 'Non spécifiée' }}
+                        </p>
+                    </div>
+                    
+                    <div class="detail-item p-3 rounded-3 mt-3">
+                        <h6 class="detail-label text-uppercase text-muted fw-bold small">Poids colis</h6>
+                        <p class="detail-value mb-0">
+                            <i class="fas fa-weight-hanging me-2"></i>{{ livraison.poidsColis|number_format(2, ',', ' ') }} kg
+                        </p>
+                    </div>
+                    
+                    <div class="detail-item p-3 rounded-3 mt-3">
+                        <h6 class="detail-label text-uppercase text-muted fw-bold small">Coût</h6>
+                        <p class="detail-value fs-5 text-success fw-bold mb-0">
+                            {{ livraison.deliveryCost|number_format(2, ',', ' ') }} €
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <small class="text-muted">Dernière mise à jour : {{ livraison.createdAt ? livraison.createdAt|date('d/m/Y à H\\hi') : 'N/A' }}</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .detail-item {
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+        border-left: 3px solid #5D78FF;
+    }
+    
+    .detail-item:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    
+    .detail-label {
+        letter-spacing: 0.5px;
+    }
+    
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        border-radius: 0 !important;
+    }
+    
+    .btn-icon-split {
+        padding-left: 2.5rem;
+        position: relative;
+    }
+    
+    .btn-icon-split .icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

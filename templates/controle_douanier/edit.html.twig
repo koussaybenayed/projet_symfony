@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}📝 Modifier le contrôle douanier{% endblock %}
+
+{% block body %}
+    <div class="card mb-4" style="background-color: white;">
+        <div class="card-header">
+            <h1 class="h3 mb-0">📝 Modifier le contrôle douanier</h1>
+        </div>
+        
+        {{ include('controle_douanier/_form.html.twig', {'button_label': '🔄 Mettre à jour'}) }}
+        
+        <div class="card-footer d-flex justify-content-between">
+            <a href="{{ path('app_controle_douanier_index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> ↩️ Retour à la liste
+            </a>
+            {{ include('controle_douanier/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}
