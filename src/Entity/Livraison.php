@@ -77,6 +77,7 @@ class Livraison
         $this->created_at = $created_at;
         return $this;
     }
+    
 
     #[ORM\Column(type: 'integer', nullable: true)]
     #[Assert\Type(type: "integer", message: "Le poids du colis doit être un nombre entier")]

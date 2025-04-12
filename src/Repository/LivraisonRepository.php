@@ -16,6 +16,7 @@ class LivraisonRepository extends ServiceEntityRepository
     /**
      * @return Livraison[] Returns an array of Livraison objects
      */
+    
     public function findBySearchCriteria(?string $searchTerm, ?string $status = null): array
     {
         $qb = $this->createQueryBuilder('l');

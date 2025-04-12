@@ -1,0 +1,79 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Confirmation de demande{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-success shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Demande enregistrée avec succès</h5>
+                </div>
+                <div class="card-body text-center py-4">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                    </div>
+                    
+                    <h3 class="mb-3">Votre demande a bien été prise en compte</h3>
+                    <p class="lead mb-4">Référence: <strong>#{{ controle_douanier.id_controle }}</strong></p>
+                    
+                    <div class="alert alert-info">
+                        <p class="mb-0">Un email de confirmation vous a été envoyé avec les détails de votre demande.</p>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h5 class="mb-3">Récapitulatif</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted">Livraison</h6>
+                                    <p class="card-text fs-4">#{{ controle_douanier.livraison.id_livraisons }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted">Pays</h6>
+                                    <p class="card-text fs-4">{{ controle_douanier.pays_douane }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted">Date</h6>
+                                    <p class="card-text fs-4">{{ controle_douanier.date_controle|date('d/m/Y') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted">Statut</h6>
+                                    <p class="card-text fs-4">
+                                        <span class="badge bg-warning">{{ controle_douanier.statut }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{{ path('app_douane_details', {'id_controle': controle_douanier.id_controle}) }}" 
+                           class="btn btn-primary px-4">
+                            <i class="fas fa-eye me-1"></i> Voir les détails
+                        </a>
+                        <a href="{{ path('app_douane_index') }}" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-home me-1"></i> Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

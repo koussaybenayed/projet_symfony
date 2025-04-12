@@ -1,14 +1,12 @@
 <?php
-
 namespace App\Repository;
 
 use App\Entity\ControleDouanier;
+use App\Entity\Livraison;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\QueryBuilder;
 
-/**
- * @extends ServiceEntityRepository<ControleDouanier>
- */
 class ControleDouanierRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,75 +14,85 @@ class ControleDouanierRepository extends ServiceEntityRepository
         parent::__construct($registry, ControleDouanier::class);
     }
 
-    /**
-     * Recherche des contrôles douaniers selon différents critères
-     * 
-     * @param string|null $searchTerm Terme de recherche (pays, commentaires)
-     * @param string|null $status Statut du contrôle
-     * @param \DateTime|null $dateFrom Date de début pour la recherche
-     * @param \DateTime|null $dateTo Date de fin pour la recherche
-     * @return ControleDouanier[] Returns an array of ControleDouanier objects
-     */
-    public function findBySearchCriteria(?string $searchTerm = null, ?string $status = null, ?\DateTime $dateFrom = null, ?\DateTime $dateTo = null): array
-    {
-        $qb = $this->createQueryBuilder('c')
-            ->leftJoin('c.livraison', 'l')
-            ->addSelect('l');
+    public function findBySearchCriteria(
+        ?string $searchTerm = null,
+        ?string $status = null,
+        ?\DateTimeInterface $dateFrom = null,
+        ?\DateTimeInterface $dateTo = null
+    ): array {
+        $qb = $this->createSearchQueryBuilder($searchTerm, $status, $dateFrom, $dateTo);
         
-        // Recherche par terme (pays ou commentaires)
-        if ($searchTerm) {
-            $qb->andWhere('c.pays_douane LIKE :searchTerm OR c.commentaires LIKE :searchTerm')
-               ->setParameter('searchTerm', '%' . $searchTerm . '%');
-        }
-        
-        // Filtre par statut
-        if ($status && $status !== 'all') {
-            $qb->andWhere('c.statut = :status')
-               ->setParameter('status', $status);
-        }
-        
-        // Filtre par date - entre dateFrom et dateTo
-        if ($dateFrom) {
-            $qb->andWhere('c.date_controle >= :dateFrom')
-               ->setParameter('dateFrom', $dateFrom);
-        }
-        
-        if ($dateTo) {
-            // Ajout d'un jour à dateTo pour inclure toute la journée jusqu'à minuit
-            $dateToEnd = clone $dateTo;
-            $dateToEnd->modify('+1 day');
-            
-            $qb->andWhere('c.date_controle < :dateTo')
-               ->setParameter('dateTo', $dateToEnd);
-        }
-        
-        return $qb->orderBy('c.date_controle', 'DESC')
-                ->getQuery()
-                ->getResult();
+        return $qb->getQuery()->getResult();
     }
 
-    //    /**
-    //     * @return ControleDouanier[] Returns an array of ControleDouanier objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    private function createSearchQueryBuilder(
+        ?string $searchTerm = null,
+        ?string $status = null,
+        ?\DateTimeInterface $dateFrom = null,
+        ?\DateTimeInterface $dateTo = null
+    ): QueryBuilder {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.livraison', 'l')
+            ->addSelect('l')  // Précharge les données de livraison
+            ->orderBy('c.date_controle', 'DESC');
 
-    //    public function findOneBySomeField($value): ?ControleDouanier
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $this->applySearchTerm($qb, $searchTerm);
+        $this->applyStatusFilter($qb, $status);
+        $this->applyDateFilters($qb, $dateFrom, $dateTo);
+
+        return $qb;
+    }
+
+    private function applySearchTerm(QueryBuilder $qb, ?string $searchTerm): void
+    {
+        if ($searchTerm) {
+            $qb->andWhere('c.pays_douane LIKE :searchTerm OR c.commentaires LIKE :searchTerm')
+                ->setParameter('searchTerm', '%'.$searchTerm.'%');
+        }
+    }
+
+    private function applyStatusFilter(QueryBuilder $qb, ?string $status): void
+    {
+        if ($status && $status !== 'all') {
+            $qb->andWhere('c.statut = :status')
+                ->setParameter('status', $status);
+        }
+    }
+
+    private function applyDateFilters(
+        QueryBuilder $qb,
+        ?\DateTimeInterface $dateFrom,
+        ?\DateTimeInterface $dateTo
+    ): void {
+        if ($dateFrom) {
+            $qb->andWhere('c.date_controle >= :dateFrom')
+                ->setParameter('dateFrom', $dateFrom);
+        }
+
+        if ($dateTo) {
+            $qb->andWhere('c.date_controle <= :dateTo')
+                ->setParameter('dateTo', $dateTo);
+        }
+    }
+
+    public function findWithLivraison(int $id): ?ControleDouanier
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.livraison', 'l')
+            ->addSelect('l')
+            ->andWhere('c.id_controle = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+    
+    public function findByLivraison(Livraison $livraison): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.livraison = :livraison')
+            ->setParameter('livraison', $livraison)
+            ->orderBy('c.date_controle', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
