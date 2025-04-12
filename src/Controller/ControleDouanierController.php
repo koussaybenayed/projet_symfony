@@ -15,10 +15,36 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ControleDouanierController extends AbstractController
 {
     #[Route('/', name: 'app_controle_douanier_index', methods: ['GET'])]
-    public function index(ControleDouanierRepository $controleDouanierRepository): Response
+    public function index(Request $request, ControleDouanierRepository $controleDouanierRepository): Response
     {
+        // Récupérer les paramètres de recherche
+        $searchTerm = $request->query->get('search');
+        $status = $request->query->get('status');
+        $dateFrom = null;
+        $dateTo = null;
+        
+        // Conversion des dates si présentes
+        if ($request->query->has('dateFrom') && !empty($request->query->get('dateFrom'))) {
+            $dateFrom = new \DateTime($request->query->get('dateFrom'));
+        }
+        
+        if ($request->query->has('dateTo') && !empty($request->query->get('dateTo'))) {
+            $dateTo = new \DateTime($request->query->get('dateTo'));
+        }
+        
+        // Effectuer la recherche si des critères sont spécifiés
+        if ($searchTerm || $status !== null && $status !== 'all' || $dateFrom || $dateTo) {
+            $controleDouaniers = $controleDouanierRepository->findBySearchCriteria($searchTerm, $status, $dateFrom, $dateTo);
+        } else {
+            $controleDouaniers = $controleDouanierRepository->findAll();
+        }
+        
         return $this->render('controle_douanier/index.html.twig', [
-            'controle_douaniers' => $controleDouanierRepository->findAll(),
+            'controle_douaniers' => $controleDouaniers,
+            'searchTerm' => $searchTerm,
+            'selectedStatus' => $status,
+            'dateFrom' => $dateFrom ? $dateFrom->format('Y-m-d') : null,
+            'dateTo' => $dateTo ? $dateTo->format('Y-m-d') : null,
         ]);
     }
 

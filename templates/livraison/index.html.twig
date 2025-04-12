@@ -15,6 +15,45 @@
         </div>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ path('app_livraison_index') }}" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group search-box">
+                        <input type="text" name="search" class="form-control" placeholder="Rechercher par référence, poids ou coût..." 
+                               value="{{ searchTerm ?? '' }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> 🔍 Rechercher
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="status" class="form-select">
+                        <option value="all" {% if selectedStatus is not defined or selectedStatus == 'all' %}selected{% endif %}>Tous les statuts</option>
+                        <option value="pending" {% if selectedStatus == 'pending' %}selected{% endif %}>En attente</option>
+                        <option value="in_progress" {% if selectedStatus == 'in_progress' %}selected{% endif %}>En cours</option>
+                        <option value="delivered" {% if selectedStatus == 'delivered' %}selected{% endif %}>Livré</option>
+                        <option value="cancelled" {% if selectedStatus == 'cancelled' %}selected{% endif %}>Annulé</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ path('app_livraison_index') }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-sync-alt"></i> 🔄 Réinitialiser
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
@@ -79,7 +118,12 @@
                     {% else %}
                         <tr>
                             <td colspan="7" class="text-center text-muted py-4">
-                                <i class="fas fa-info-circle me-2"></i> 📭 Aucune livraison trouvée
+                                <i class="fas fa-info-circle me-2"></i> 
+                                {% if searchTerm or selectedStatus %}
+                                    📭 Aucune livraison ne correspond à votre recherche
+                                {% else %}
+                                    📭 Aucune livraison trouvée
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

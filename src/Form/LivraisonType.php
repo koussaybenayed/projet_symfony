@@ -4,12 +4,11 @@ namespace App\Form;
 
 use App\Entity\Livraison;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LivraisonType extends AbstractType
 {
@@ -47,10 +46,10 @@ class LivraisonType extends AbstractType
                 'label' => 'Statut de destination',
                 'required' => false,
                 'choices' => [
-                    'En attente' => 'en_attente',
-                    'En cours' => 'en_cours',
-                    'Livré' => 'livre',
-                    'Annulé' => 'annule',
+                    'En attente' => 'pending',
+                    'En cours' => 'in_progress',
+                    'Livré' => 'delivered',
+                    'Annulé' => 'cancelled',
                 ],
                 'attr' => [
                     'class' => 'form-select',
