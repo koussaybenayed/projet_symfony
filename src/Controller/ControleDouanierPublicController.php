@@ -71,7 +71,7 @@ final class ControleDouanierPublicController extends AbstractController
     #[Route('/suivi', name: 'app_douane_suivi', methods: ['GET', 'POST'])]
     public function suivi(Request $request, ControleDouanierRepository $repository, LivraisonRepository $livraisonRepository): Response
     {
-        $reference = $request->request->get('reference');
+        $reference = $request->query->get('reference');
         $result = null;
         
         if ($reference) {
@@ -95,6 +95,20 @@ final class ControleDouanierPublicController extends AbstractController
         ]);
     }
 
+    // src/Controller/ControleDouanierPublicController.php
+
+// src/Controller/ControleDouanierPublicController.php
+#[Route('/pays', name: 'app_douane_pays')]
+public function pays(Request $request, ControleDouanierRepository $repository): Response
+{
+    $paysRecherche = $request->query->get('pays');
+    $controles = $paysRecherche ? $repository->findBy(['pays_douane' => $paysRecherche]) : [];
+
+    return $this->render('douane/pays.html.twig', [
+        'pays_recherche' => $paysRecherche,
+        'controles' => $controles
+    ]);
+}
     #[Route('/demande', name: 'app_douane_demande', methods: ['GET', 'POST'])]
     public function demande(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -132,7 +146,6 @@ final class ControleDouanierPublicController extends AbstractController
         ]);
     }
     
-
     #[Route('/faq', name: 'app_douane_faq', methods: ['GET'])]
     public function faq(): Response
     {

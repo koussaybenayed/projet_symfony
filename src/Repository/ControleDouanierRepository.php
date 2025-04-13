@@ -42,6 +42,18 @@ class ControleDouanierRepository extends ServiceEntityRepository
 
         return $qb;
     }
+    // src/Repository/ControleDouanierRepository.php
+
+
+public function findAllPays(): array
+{
+    return $this->createQueryBuilder('c')
+        ->select('DISTINCT c.pays_douane')
+        ->where('c.pays_douane IS NOT NULL')
+        ->orderBy('c.pays_douane', 'ASC')
+        ->getQuery()
+        ->getSingleColumnResult();
+}
 
     private function applySearchTerm(QueryBuilder $qb, ?string $searchTerm): void
     {

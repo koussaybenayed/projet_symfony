@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Livraison;
+use App\Form\LivraisonType;
 use App\Form\LivraisonTrackingType;
 use App\Repository\LivraisonRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,16 +18,43 @@ class FrontLivraisonController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(LivraisonRepository $livraisonRepository): Response
     {
-        // ✅ Récupérer les livraisons avec un statut valide, triées par date de création
         $livraisons = $livraisonRepository->findBy(
-            ['destination_status' => ['pending', 'in_progress', 'delivered']],
-            ['created_at' => 'DESC'] // ✅ Utilise bien le nom exact de la propriété Doctrine
+            ['destination_status' => [' En_cours', 'En attente', 'livré ','Annulé']],
+            ['created_at' => 'DESC']
         );
 
         return $this->render('front/livraison/index.html.twig', [
             'livraisons' => $livraisons,
         ]);
     }
+
+   // src/Controller/FrontLivraisonController.php
+
+#[Route('/ajout', name: 'ajout', methods: ['GET', 'POST'])]
+public function ajout(Request $request, EntityManagerInterface $em): Response
+{
+    $livraison = new Livraison();
+    $form = $this->createForm(LivraisonType::class, $livraison);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Générer un numéro de suivi personnalisé
+        $livraison->setDestinationStatus('pending');
+        
+        $em->persist($livraison);
+        $em->flush();
+
+        $this->addFlash('success', 'Votre livraison Liv-#'.$livraison->getIdLivraisons().' a été créée avec succès !');
+        return $this->redirectToRoute('front_livraison_detail', [
+            'id_livraisons' => $livraison->getIdLivraisons()
+        ]);
+    }
+
+    return $this->render('front/livraison/ajout.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
+
 
     #[Route('/tracking', name: 'tracking', methods: ['GET', 'POST'])]
     public function tracking(Request $request, LivraisonRepository $livraisonRepository): Response
@@ -38,8 +67,6 @@ class FrontLivraisonController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $trackingNumber = $data['tracking_number'];
-
-            // ✅ Extraire l'ID depuis le numéro de suivi de type "Liv-#123"
             $idLivraison = intval(str_replace('Liv-#', '', $trackingNumber));
             $livraison = $livraisonRepository->find($idLivraison);
         }
@@ -50,11 +77,11 @@ class FrontLivraisonController extends AbstractController
             'submitted' => $form->isSubmitted(),
         ]);
     }
+    
 
-    #[Route('/{id_livraisons}', name: 'detail', methods: ['GET'])]
+    #[Route('/{id_livraisons}', name: 'detail', methods: ['GET'], requirements: ['id_livraisons' => '\d+'])]
     public function detail(Livraison $livraison): Response
     {
-        // ✅ Empêcher l’accès aux livraisons annulées
         if ($livraison->getDestinationStatus() === 'cancelled') {
             $this->addFlash('error', 'Cette livraison a été annulée.');
             return $this->redirectToRoute('front_livraison_index');

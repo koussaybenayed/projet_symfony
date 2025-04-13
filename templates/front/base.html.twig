@@ -27,7 +27,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="{{ path('app_douane_index') }}">DOUANE AGEN</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+     
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -35,12 +35,8 @@
           <li class="nav-item">
             <a class="nav-link {{ app.request.get('_route') == 'app_douane_index' ? 'active' }}" href="{{ path('app_douane_index') }}">Accueil</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link {{ app.request.get('_route') == 'app_douane_demande' ? 'active' }}" href="{{ path('app_douane_demande') }}">Nouvelle demande</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {{ app.request.get('_route') == 'app_douane_suivi' ? 'active' }}" href="{{ path('app_douane_suivi') }}">Suivi</a>
-          </li>
+          
+          
           <li class="nav-item">
             <a class="nav-link {{ app.request.get('_route') == 'app_douane_faq' ? 'active' }}" href="{{ path('app_douane_faq') }}">FAQ</a>
           </li>
