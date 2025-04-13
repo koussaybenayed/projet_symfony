@@ -1,12 +1,13 @@
 <?php
 
+// src/Form/LivraisonType.php
 namespace App\Form;
 
 use App\Entity\Livraison;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -22,7 +23,7 @@ class LivraisonType extends AbstractType
                     'class' => 'form-control',
                     'min' => (new \DateTime())->format('Y-m-d'),
                 ],
-                'help' => '',
+                'help' => 'La date doit être dans le futur',
             ])
             ->add('delivery_cost', NumberType::class, [
                 'label' => 'Coût de livraison (€)',
@@ -46,18 +47,15 @@ class LivraisonType extends AbstractType
                 'label' => 'Statut de destination',
                 'required' => false,
                 'choices' => [
-                    'En attente' => 'pending',
-                    'En cours' => 'in_progress',
-                    'Livré' => 'delivered',
-                    'Annulé' => 'cancelled',
+                    'En attente' => 'en_attente',
+                    'En cours' => 'en_cours',
+                    'Livré' => 'livre',
+                    'Annulé' => 'annule',
                 ],
                 'attr' => [
                     'class' => 'form-select',
                 ],
-            ])
-        ;
-        
-        // Ne pas afficher created_at dans le formulaire, il sera défini automatiquement dans le contrôleur
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
