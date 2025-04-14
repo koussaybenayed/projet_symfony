@@ -1,0 +1,74 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Liste des Billets Disponibles{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card {
+            background-color: #f8f9fa; /* Couleur de fond clair */
+            border: 1px solid #ddd; /* Bordure légère */
+            border-radius: 8px; /* Coins arrondis */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre légère */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .card-title {
+            color: #007bff;
+        }
+        .card-subtitle {
+            color: #6c757d;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+  <h1 class="text-center mb-4">Liste des Billets Disponibles</h1>
+  <div class="row">
+    {% for billet in billets %}
+      {% if billet.statut == 'Annulé' %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{ billet.depart }} → {{ billet.destination }}</h5>
+              <h6 class="card-subtitle text-muted mb-2">Compagnie : {{ billet.compagnie }}</h6>
+              <p class="card-text"><strong>Date de départ :</strong> {{ billet.dateDepart ? billet.dateDepart|date('d/m/Y') : 'Non spécifiée' }}</p>
+              <p class="card-text"><strong>Date d'arrivée :</strong> {{ billet.dateArrive ? billet.dateArrive|date('d/m/Y') : 'Non spécifiée' }}</p>
+            </div>
+            <div class="card-body">
+              <p class="card-text"><strong>Prix :</strong> {{ billet.prix ? billet.prix ~ ' €' : 'Non spécifié' }}</p>
+              <p class="card-text"><strong>Type de transport :</strong> {{ billet.typeTransport }}</p>
+              <p class="card-text"><strong>Classe :</strong> {{ billet.classe }}</p>
+              {# Lien pour réserver avec ou sans assistance #}
+              <a href="{{ path('app_assistance_new', { billetId: billet.id }) }}" class="btn btn-primary">Réserver avec Assistance</a>
+              {# <a href="/billet/{{ billet.id }}/reserver?assistance=0" class="btn btn-secondary">Réserver sans Assistance</a> #}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% else %}
+      <p class="text-center">Aucun billet disponible pour le moment.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Billets{% endblock %}
+
+{% block body %}
+<div class="content-wrapper">
+    <div class="flex-grow-1 py-2">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h1 class="mb-0">Liste des billets</h1>
+                <a href="{{ path('app_billet_new') }}" class="btn btn-success">
+                    <i class="bx bx-plus me-1"></i> Ajouter un nouveau billet
+                </a>
+            </div>
+
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Date départ</th>
+                            <th>Date arrivée</th>
+                            <th>Utilisateur</th>
+                            <th>Réduction</th>
+                            <th>Type de transport</th>
+                            <th>Compagnie</th>
+                            <th>Départ</th>
+                            <th>Destination</th>
+                            <th>Prix (€)</th>
+                            <th>Classe</th>
+                            <th>Statut</th>
+                            <th>Assistance</th>
+                            <th>Véhicule</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        {% for billet in billets %}
+                            <tr>
+                                <td>{{ billet.id }}</td>
+                                <td>{{ billet.dateDepart ? billet.dateDepart|date('Y-m-d') : '' }}</td>
+                                <td>{{ billet.dateArrive ? billet.dateArrive|date('Y-m-d') : '' }}</td>
+                                <td>{{ billet.user ? billet.user.fullname : 'Aucune' }}</td>
+                                <td>{{ billet.reduction ? billet.reduction.code : 'Aucune' }}</td>
+                                <td>
+                                    <span class="badge bg-label-{{ billet.typeTransport == 'Avion' ? 'primary' : (billet.typeTransport == 'Bateau' ? 'info' : 'secondary') }}">
+                                        {{ billet.typeTransport }}
+                                    </span>
+                                </td>
+                                <td>{{ billet.compagnie }}</td>
+                                <td>{{ billet.depart }}</td>
+                                <td>{{ billet.destination }}</td>
+                                <td>{{ billet.prix }}</td>
+                                <td>
+                                    <span class="badge bg-{{ billet.classe == 'Première' ? 'warning' : (billet.classe == 'Business' ? 'info' : 'secondary') }}">
+                                        {{ billet.classe }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ billet.statut == 'Confirmé' ? 'success' : (billet.statut == 'Annulé' ? 'danger' : 'warning') }}">
+                                        {{ billet.statut }}
+                                    </span>
+                                </td>
+                                <td>{{ billet.assistance ? billet.assistance.id : 'Aucune' }}</td>
+                                <td>{{ billet.vehicule ? billet.vehicule.id : 'Aucun' }}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="{{ path('app_billet_show', {'id': billet.id}) }}">
+                                                <i class="bx bx-show me-1"></i> Voir
+                                            </a>
+                                            <a class="dropdown-item" href="{{ path('app_billet_edit', {'id': billet.id}) }}">
+                                                <i class="bx bx-edit-alt me-1"></i> Modifier
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="15" class="text-center">Aucun billet trouvé.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Mes assistances{% endblock %}
+
+{% block body %}
+    <h1>Assistance index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Type_assistance</th>
+                <th>Aeroport_port</th>
+                <th>Heure_prise_en_charge</th>
+                <th>Point_rendez_vous</th>
+                <th>Informations_complementaires</th>
+                <th>Statut</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for assistance in assistances %}
+            <tr>
+                <td>{{ assistance.id }}</td>
+                <td>{{ assistance.typeAssistance }}</td>
+                <td>{{ assistance.aeroportPort }}</td>
+                <td>{{ assistance.heurePriseEnCharge ? assistance.heurePriseEnCharge|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ assistance.pointRendezVous }}</td>
+                <td>{{ assistance.informationsComplementaires }}</td>
+                <td>{{ assistance.statut }}</td>
+                <td>
+                    <a href="{{ path('app_assistance_show', {'id': assistance.id}) }}">show</a>
+                    <a href="{{ path('app_assistance_edit', {'id': assistance.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_assistance_new') }}">Create new</a>
+{% endblock %}
