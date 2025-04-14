@@ -6,7 +6,7 @@
     <section class="hero-section">
         <div class="container text-center">
             <h1>🔍 Suivre votre livraison</h1>
-            <p class="lead">Entrez votre numéro de suivi pour vérifier l'état de votre livraison</p>
+            <p class="lead">Entrez votre numéro de suivi complet pour vérifier l'état de votre livraison</p>
         </div>
     </section>
 
@@ -16,17 +16,21 @@
                 <div class="tracking-box mb-5">
                     {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                         <div class="mb-3">
-                            {{ form_label(form.tracking_number, 'Numéro de suivi', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            {{ form_label(form.tracking_number, 'Numéro de suivi complet', {'label_attr': {'class': 'form-label fw-bold'}}) }}
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                {{ form_widget(form.tracking_number) }}
+                                <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                                {{ form_widget(form.tracking_number, {'attr': {
+                                    'placeholder': 'Liv-#0068',
+                                    'pattern': 'Liv-#\\d{4}',
+                                    'title': 'Format: Liv-# suivi de 4 chiffres'
+                                }}) }}
                             </div>
                             {{ form_errors(form.tracking_number) }}
-                            <small class="form-text text-muted">Exemple: Liv-#0001</small>
+                            <small class="form-text text-muted">Format requis: Liv-# suivi de 4 chiffres (ex: Liv-#0068)</small>
                         </div>
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-search me-2"></i> Rechercher
+                                <i class="fas fa-search-location me-2"></i> Suivre la livraison
                             </button>
                         </div>
                     {{ form_end(form) }}
@@ -34,102 +38,167 @@
                 
                 {% if submitted %}
                     {% if livraison %}
-                        <div class="card mb-4">
+                        <div class="card mb-4 shadow">
                             <div class="card-header bg-primary text-white">
                                 <h5 class="mb-0">
-                                    <i class="fas fa-truck me-2"></i> Résultat du suivi: Liv-#{{ "%04d"|format(livraison.idLivraisons) }}
+                                    <i class="fas fa-shipping-fast me-2"></i> Suivi: {{ livraison.fullTrackingNumber }}
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <div>
+                                <div class="d-flex flex-wrap justify-content-between mb-3">
+                                    <div class="mb-2">
                                         <h6 class="text-muted mb-1">Date de création</h6>
-                                        <p class="mb-0">{{ livraison.createdAt ? livraison.createdAt|date('d/m/Y') : 'N/A' }}</p>
+                                        <p class="mb-0">{{ livraison.createdAt|date('d/m/Y H:i') }}</p>
                                     </div>
-                                    <div>
-                                        <h6 class="text-muted mb-1">Date estimée de livraison</h6>
-                                        <p class="mb-0">{{ livraison.estimatedDelivery ? livraison.estimatedDelivery|date('d/m/Y') : 'N/A' }}</p>
+                                    <div class="mb-2">
+                                        <h6 class="text-muted mb-1">Livraison estimée</h6>
+                                        <p class="mb-0">{{ livraison.estimatedDelivery ? livraison.estimatedDelivery|date('d/m/Y') : 'En calcul...' }}</p>
                                     </div>
-                                    <div>
-                                        <h6 class="text-muted mb-1">Statut</h6>
-                                        <span class="badge bg-{{ livraison.destinationStatus == 'delivered' ? 'success' : 
-                                            (livraison.destinationStatus == 'pending' ? 'warning' : 
-                                            (livraison.destinationStatus == 'cancelled' ? 'danger' : 'info')) }} p-2">
-                                            {% if livraison.destinationStatus == 'delivered' %}
-                                                ✅ 
-                                            {% elseif livraison.destinationStatus == 'pending' %}
-                                                ⏳ 
-                                            {% elseif livraison.destinationStatus == 'cancelled' %}
-                                                ❌ 
+                                    <div class="mb-2">
+                                        <h6 class="text-muted mb-1">Statut actuel</h6>
+                                        <span class="badge bg-{{ livraison.destinationStatus == 'livré' ? 'success' : 
+                                            (livraison.destinationStatus == 'En attente' ? 'warning' : 
+                                            (livraison.destinationStatus == 'Annulé' ? 'danger' : 'info')) }} p-2">
+                                            {% if livraison.destinationStatus == 'livré' %}
+                                                <i class="fas fa-check-circle me-1"></i>
+                                            {% elseif livraison.destinationStatus == 'En attente' %}
+                                                <i class="fas fa-clock me-1"></i>
+                                            {% elseif livraison.destinationStatus == 'Annulé' %}
+                                                <i class="fas fa-times-circle me-1"></i>
                                             {% else %}
-                                                ℹ️ 
+                                                <i class="fas fa-truck me-1"></i>
                                             {% endif %}
-                                            {{ livraison.destinationStatus|capitalize }}
+                                            {{ livraison.destinationStatus }}
                                         </span>
                                     </div>
                                 </div>
                                 
-                                <hr>
+                                <hr class="my-4">
                                 
                                 <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <h6 class="text-muted mb-1">Poids du colis</h6>
-                                        <p>{{ livraison.poidsColis }} kg</p>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-weight-hanging text-primary mb-2 fa-2x"></i>
+                                                <h6 class="text-muted">Poids du colis</h6>
+                                                <p class="h5">{{ livraison.poidsColis }} kg</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <h6 class="text-muted mb-1">Coût de livraison</h6>
-                                        <p class="text-success fw-bold">{{ livraison.deliveryCost }} €</p>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-tag text-primary mb-2 fa-2x"></i>
+                                                <h6 class="text-muted">Coût de livraison</h6>
+                                                <p class="h5 text-success">{{ livraison.deliveryCost }} €</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 
-                                <h6 class="text-muted mb-3">Progression de la livraison</h6>
+                                <h5 class="mb-3"><i class="fas fa-map-marked-alt me-2"></i> Progression</h5>
                                 <div class="tracking-timeline">
-                                    <div class="timeline-item active">
+                                    <div class="timeline-item {{ livraison.destinationStatus in ['En_cours', 'livré'] ? 'active' : '' }}">
+                                        <div class="timeline-marker"></div>
                                         <div class="timeline-content">
-                                            <h6 class="mb-0">Commande créée</h6>
-                                            <p class="text-muted mb-0 small">{{ livraison.createdAt ? livraison.createdAt|date('d/m/Y H:i') : 'N/A' }}</p>
+                                            <h6 class="mb-1">Commande enregistrée</h6>
+                                            <p class="text-muted small mb-0">{{ livraison.createdAt|date('d/m/Y H:i') }}</p>
+                                            {% if livraison.destinationStatus in ['En_cours', 'livré'] %}
+                                                <p class="text-success small mt-1"><i class="fas fa-check-circle"></i> Complété</p>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                    <div class="timeline-item {{ livraison.destinationStatus in ['in_progress', 'delivered'] ? 'active' : 'pending' }}">
+                                    <div class="timeline-item {{ livraison.destinationStatus in ['livré'] ? 'active' : '' }}">
+                                        <div class="timeline-marker"></div>
                                         <div class="timeline-content">
-                                            <h6 class="mb-0">En cours de traitement</h6>
-                                            <p class="text-muted mb-0 small">
-                                                {% if livraison.destinationStatus in ['in_progress', 'delivered'] %}
-                                                    {{ livraison.createdAt ? livraison.createdAt|date_modify("+1 day")|date('d/m/Y H:i') : 'N/A' }}
-                                                {% else %}
-                                                    À venir
-                                                {% endif %}
-                                            </p>
+                                            <h6 class="mb-1">En cours de livraison</h6>
+                                            {% if livraison.destinationStatus in ['livré'] %}
+                                                <p class="text-muted small mb-0">{{ livraison.createdAt|date_modify("+1 day")|date('d/m/Y H:i') }}</p>
+                                                <p class="text-success small mt-1"><i class="fas fa-check-circle"></i> Complété</p>
+                                            {% else %}
+                                                <p class="text-muted small">En attente de traitement</p>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                    <div class="timeline-item {{ livraison.destinationStatus == 'delivered' ? 'active' : 'pending' }}">
+                                    <div class="timeline-item {{ livraison.destinationStatus == 'livré' ? 'active' : '' }}">
+                                        <div class="timeline-marker"></div>
                                         <div class="timeline-content">
-                                            <h6 class="mb-0">Livré</h6>
-                                            <p class="text-muted mb-0 small">
-                                                {% if livraison.destinationStatus == 'delivered' %}
-                                                    {{ livraison.estimatedDelivery ? livraison.estimatedDelivery|date('d/m/Y') : 'N/A' }}
-                                                {% else %}
-                                                    Estimation: {{ livraison.estimatedDelivery ? livraison.estimatedDelivery|date('d/m/Y') : 'N/A' }}
-                                                {% endif %}
-                                            </p>
+                                            <h6 class="mb-1">Livraison effectuée</h6>
+                                            {% if livraison.destinationStatus == 'livré' %}
+                                                <p class="text-muted small mb-0">{{ livraison.updatedAt|date('d/m/Y H:i') }}</p>
+                                                <p class="text-success small mt-1"><i class="fas fa-check-circle"></i> Livré avec succès</p>
+                                            {% else %}
+                                                <p class="text-muted small">Estimation: {{ livraison.estimatedDelivery|date('d/m/Y') }}</p>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div class="text-center mt-4">
-                                    <a href="{{ path('front_livraison_detail', {'id_livraisons': livraison.id_livraisons}) }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-eye me-1"></i> Voir tous les détails
+                                    <a href="{{ path('front_livraison_detail', {'id_livraisons': livraison.idLivraisons}) }}" class="btn btn-primary px-4">
+                                        <i class="fas fa-file-alt me-2"></i> Détails complets
                                     </a>
                                 </div>
                             </div>
                         </div>
                     {% else %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i> Aucune livraison trouvée avec ce numéro de suivi. Veuillez vérifier et réessayer.
+                        <div class="alert alert-warning shadow">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-3 fa-2x"></i>
+                                <div>
+                                    <h5 class="alert-heading">Livraison introuvable</h5>
+                                    <p class="mb-0">Aucune livraison ne correspond au numéro <strong>"{{ form.tracking_number.vars.value }}"</strong>.</p>
+                                    <p class="mb-0">Veuillez vérifier le format (Liv-#XXXX) et réessayer.</p>
+                                </div>
+                            </div>
                         </div>
                     {% endif %}
                 {% endif %}
             </div>
         </div>
     </div>
+
+    <style>
+        .tracking-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        .timeline-marker {
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            border: 3px solid white;
+        }
+        .timeline-item.active .timeline-marker {
+            background-color: #0d6efd;
+        }
+        .timeline-content {
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: -21px;
+            top: 20px;
+            height: calc(100% - 20px);
+            width: 2px;
+            background-color: #dee2e6;
+        }
+        .timeline-item.active:not(:last-child)::after {
+            background-color: #0d6efd;
+        }
+    </style>
 {% endblock %}

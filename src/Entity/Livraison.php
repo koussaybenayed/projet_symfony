@@ -23,6 +23,13 @@ class Livraison
     {
         return $this->id_livraisons;
     }
+    public function getFullTrackingNumber(): string
+{
+    $datePart = $this->created_at ? $this->created_at->format('Ymd') : '00000000';
+    $idPart = $this->id_livraisons ?? 0;
+    return 'TRK-' . $datePart . '-' . str_pad($idPart, 5, '0', STR_PAD_LEFT);
+}
+
 
     public function setId_livraisons(int $id_livraisons): self
     {
