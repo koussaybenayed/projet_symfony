@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .signup-container {
+            background: #fff;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #4f46e5;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #4f46e5;
+        }
+
+        .small-text {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .small-text a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+        .form-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+        .small-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="signup-container">
+    <h2>Sign Up</h2>
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+    {% if form.vars.errors is not empty %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for error in form.vars.errors %}
+                <li>{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+
+    <div class="form-group">
+        {{ form_widget(form.user_username, {'attr': {'class': 'form-control', 'placeholder': 'Username'}}) }}
+        {{ form_errors(form.user_username) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_email, {'attr': {'class': 'form-control', 'placeholder': 'Email'}}) }}
+        {{ form_errors(form.user_email) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_password, {'attr': {'class': 'form-control', 'placeholder': 'Password'}}) }}
+        {{ form_errors(form.user_password) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_firstname, {'attr': {'class': 'form-control', 'placeholder': 'First Name'}}) }}
+         {{ form_errors(form.user_firstname) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_lastname, {'attr': {'class': 'form-control', 'placeholder': 'Last Name'}}) }}
+         {{ form_errors(form.user_lastname) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_birthday, {'attr': {'class': 'form-control'}}) }}
+         {{ form_errors(form.user_birthday) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_gender, {'attr': {'class': 'form-control'}}) }}
+         {{ form_errors(form.user_gender) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_picture, {'attr': {'class': 'form-control'}}) }}
+         {{ form_errors(form.user_picture) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_phonenumber, {'attr': {'class': 'form-control', 'placeholder': 'Phone Number'}}) }}
+         {{ form_errors(form.user_phonenumber) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_level, {'attr': {'class': 'form-control', 'placeholder': 'Level'}}) }}
+         {{ form_errors(form.user_level) }}
+    </div>
+    <button type="submit" class="btn-submit">{{ button_label|default('Sign Up') }}</button>
+
+    {{ form_end(form) }}
+
+    <div class="small-text">
+        Already have an account?
+        <a href="{{ path('app_login') }}">Log in</a> {# Replace "#" with your login route path if available #}
+    </div>
+</div>
+
+</body>
+</html>

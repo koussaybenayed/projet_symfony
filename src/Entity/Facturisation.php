@@ -4,8 +4,9 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use DateTimeInterface;  // Use PHP's built-in DateTimeInterface
+use DateTimeInterface;
 use App\Repository\FacturisationRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FacturisationRepository::class)]
 #[ORM\Table(name: 'facturisation')]
@@ -27,7 +28,13 @@ class Facturisation
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: "Le paiement ne doit pas être vide.")]
+    #[Assert\Type('string', message: "Le paiement doit être une chaîne de caractères.")]
+    #[Assert\Regex(
+        pattern: "/^[\p{L}\s'-]+$/u",
+        message: "Le paiement ne peut contenir que des lettres, des espaces ou des caractères accentués."
+    )]
     private ?string $payment_method = null;
 
     public function getPayment_method(): ?string
@@ -41,7 +48,12 @@ class Facturisation
         return $this;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: false)]
+    #[ORM\Column(name: 'amount', type: 'decimal', precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: "Le montant de la facturisation ne doit pas être vide.")]
+    #[Assert\Regex(
+        pattern: '/^\d+(\.\d{1,2})?$/',
+        message: "Veuillez entrer un nombre valide."
+    )]
     private ?float $amount = null;
 
     public function getAmount(): ?float
@@ -55,21 +67,30 @@ class Facturisation
         return $this;
     }
 
-    #[ORM\Column(type: 'datetime', nullable: false)]
-    private ?\DateTimeInterface $payment_date = null; // Use PHP's DateTimeInterface
+    #[ORM\Column(name: 'payment_date', type: 'datetime')]
+    #[Assert\NotBlank(message: "La date de paiement ne doit pas être vide.")]
+    #[Assert\Type(\DateTimeInterface::class, message: "La date de paiement doit être une date valide.")]
+    #[Assert\LessThanOrEqual("today", message: "La date de paiement ne peut pas être dans le futur.")]
+    private ?DateTimeInterface $payment_date = null;
 
-    public function getPayment_date(): ?\DateTimeInterface
-    {
-        return $this->payment_date;
-    }
-
-    public function setPayment_date(\DateTimeInterface $payment_date): self  // Accept DateTimeInterface
+    public function setPaymentDate(?DateTimeInterface $payment_date): self
     {
         $this->payment_date = $payment_date;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    public function getPaymentDate(): ?DateTimeInterface
+    {
+        return $this->payment_date;
+    }
+
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: "Le statut ne doit pas être vide.")]
+    #[Assert\Type('string', message: "Le statut doit être une chaîne de caractères.")]
+    #[Assert\Regex(
+        pattern: "/^[\p{L}\s'-]+$/u",
+        message: "Le statut ne peut contenir que des lettres, des espaces ou des caractères accentués."
+    )]
     private ?string $status = null;
 
     public function getStatus(): ?string
@@ -136,19 +157,9 @@ class Facturisation
     public function setPaymentMethod(string $payment_method): static
     {
         $this->payment_method = $payment_method;
-
-        return $this;
-    }
-
-    public function getPaymentDate(): ?\DateTimeInterface
-    {
-        return $this->payment_date;
-    }
-
-    public function setPaymentDate(\DateTimeInterface $payment_date): static
-    {
-        $this->payment_date = $payment_date;
-
         return $this;
     }
 }
+
+
+

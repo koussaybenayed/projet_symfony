@@ -3,7 +3,7 @@ namespace App\Service;
 
 class CensorshipService
 {
-    private $bannedWords = ['fuck', 'shit', 'curse', 'insult', 'merde'];
+    private $bannedWords = ['thinks', 'bad', 'curse', 'insult','badword'];
 
     public function censor(string $text): string
     {

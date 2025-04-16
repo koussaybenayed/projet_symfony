@@ -76,11 +76,21 @@ final class ReclamationController extends AbstractController
     #[Route('/{id}', name: 'app_reclamation_delete', methods: ['POST'])]
     public function delete(Request $request, Reclamation $reclamation, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$reclamation->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $reclamation->getId(), $request->getPayload()->getString('_token'))) {
+    
+            // 👇 Check if a response is linked
+            if ($reclamation->getResponse()) {
+                $this->addFlash('danger', '❌ You cannot delete this reclamation because it has a response.');
+                return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
+            }
+    
+            // ✅ Safe to delete
             $entityManager->remove($reclamation);
             $entityManager->flush();
+    
+            $this->addFlash('success', '✅ Reclamation deleted successfully.');
         }
-
+    
         return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
     }
 }

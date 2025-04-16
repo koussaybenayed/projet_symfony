@@ -1,0 +1,75 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Détails contrôle #{{ controle_douanier.idControle }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-light p-2 rounded shadow-sm">
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_douane_index') }}">
+                    <i class="fas fa-clipboard-list me-1"></i> Contrôles douaniers
+                </a>
+            </li>
+            
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Détails du contrôle -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm rounded mb-4 border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="mb-0 text-primary"><i class="fas fa-shield-alt me-2"></i>Détails du contrôle</h5>
+                    <span class="badge rounded-pill 
+                        bg-{{ controle_douanier.statut == 'Validé' ? 'success' : 
+                             (controle_douanier.statut == 'En attente' ? 'warning' : 
+                             (controle_douanier.statut == 'Rejeté' ? 'danger' : 'info')) }}">
+                        {{ controle_douanier.statut }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <dl class="row"> 
+                        <dt class="col-sm-4">Date de contrôle :</dt>
+                        <dd class="col-sm-8">{{ controle_douanier.dateControle|date('d/m/Y') }}</dd>
+
+                        <dt class="col-sm-4">Pays de douane :</dt>
+                        <dd class="col-sm-8">{{ controle_douanier.paysDouane }}</dd>
+
+                        {% if controle_douanier.commentaires %}
+                        <dt class="col-sm-4">Commentaires :</dt>
+                        <dd class="col-sm-8">{{ controle_douanier.commentaires }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations livraison -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm rounded mb-4 border-0">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 text-success"><i class="fas fa-box me-2"></i>Informations livraison</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-5">Poids :</dt>
+                        <dd class="col-sm-7">{{ controle_douanier.livraison.poids_colis }} kg</dd>
+
+                        <dt class="col-sm-5">Statut :</dt>
+                        <dd class="col-sm-7">{{ controle_douanier.livraison.destination_status }}</dd>
+                    </dl>
+                </div>
+            </div>
+
+            {% if controle_douanier.statut == 'Rejeté' %}
+            <div class="text-center">
+                <a href="{{ path('app_douane_demande') }}" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-redo me-1"></i> Refaire une demande
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

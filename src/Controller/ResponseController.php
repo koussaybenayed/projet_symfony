@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;  // Alias the Symfony Response
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/reponse')]
+#[Route('/response')]
 final class ResponseController extends AbstractController
 {
     #[Route(name: 'app_response_index', methods: ['GET'])]

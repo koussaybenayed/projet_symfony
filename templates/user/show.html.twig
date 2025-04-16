@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User{% endblock %}
+
+{% block body %}
+    <h1>User Details</h1>
+
+    <table class="table">
+        <tbody>
+          
+            <tr>
+                <th>User_username</th>
+                <td>{{ user.userUsername }}</td>
+            </tr>
+            <tr>
+                <th>User_email</th>
+                <td>{{ user.userEmail }}</td>
+            </tr>
+            <tr>
+                <th>User_password</th>
+                <td>{{ user.userPassword }}</td>
+            </tr>
+            <tr>
+                <th>User_firstname</th>
+                <td>{{ user.userFirstname }}</td>
+            </tr>
+            <tr>
+                <th>User_lastname</th>
+                <td>{{ user.userLastname }}</td>
+            </tr>
+            <tr>
+                <th>User_birthday</th>
+                <td>{{ user.userBirthday ? user.userBirthday|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>User_gender</th>
+                <td>{{ user.userGender }}</td>
+            </tr>
+            {% if user.userPicture %}
+    <img src="{{ asset('uploads/pictures/' ~ user.userPicture) }}" alt="Profile Picture" width="150">
+{% else %}
+    <p>No profile picture uploaded.</p>
+{% endif %}
+
+            <tr>
+                <th>User_phonenumber</th>
+                <td>{{ user.userPhonenumber }}</td>
+            </tr>
+            <tr>
+                <th>User_level</th>
+                <td>{{ user.userLevel }}</td>
+            </tr>
+            <tr>
+                <th>User_role</th>
+                <td>{{ user.userRole }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+  
+    <div class="d-flex gap-2 mt-4">
+        <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to list
+        </a>
+        
+        <a href="{{ path('app_user_edit', {'user_id': user.getUserId()}) }}" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        
+        {{ include('user/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

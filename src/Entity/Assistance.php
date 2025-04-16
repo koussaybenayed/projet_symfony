@@ -16,21 +16,21 @@ class Assistance
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $ID = null;
+    private ?int $id = null;
 
-    public function getID(): ?int
+    public function getId(): ?int
     {
-        return $this->ID;
+        return $this->id;
     }
 
-    public function setID(int $ID): self
+    public function setId(int $id): self
     {
-        $this->ID = $ID;
+        $this->id = $id;
         return $this;
     }
 
-    #[ORM\ManyToOne(targetEntity: Billet::class, inversedBy: 'assistances')]
-    #[ORM\JoinColumn(name: 'Billet_ID', referencedColumnName: 'id')]
+    #[ORM\OneToOne(targetEntity: Billet::class, inversedBy: 'assistance')]
+    #[ORM\JoinColumn(name: 'billet_id', referencedColumnName: 'id', unique: true)]
     private ?Billet $billet = null;
 
     public function getBillet(): ?Billet
@@ -44,146 +44,146 @@ class Assistance
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $Type_assistance = null;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $type_assistance = null;
 
     public function getType_assistance(): ?string
     {
-        return $this->Type_assistance;
+        return $this->type_assistance;
     }
 
-    public function setType_assistance(string $Type_assistance): self
+    public function setType_assistance(?string $type_assistance): self
     {
-        $this->Type_assistance = $Type_assistance;
+        $this->type_assistance = $type_assistance;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $Aeroport_Port = null;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $aeroport_port = null;
 
-    public function getAeroport_Port(): ?string
+    public function getAeroport_port(): ?string
     {
-        return $this->Aeroport_Port;
+        return $this->aeroport_port;
     }
 
-    public function setAeroport_Port(string $Aeroport_Port): self
+    public function setAeroport_port(?string $aeroport_port): self
     {
-        $this->Aeroport_Port = $Aeroport_Port;
+        $this->aeroport_port = $aeroport_port;
         return $this;
     }
 
-    #[ORM\Column(type: 'datetime', nullable: false)]
-    private ?\DateTimeInterface $Heure_prise_en_charge = null;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $heure_prise_en_charge = null;
 
     public function getHeure_prise_en_charge(): ?\DateTimeInterface
     {
-        return $this->Heure_prise_en_charge;
+        return $this->heure_prise_en_charge;
     }
 
-    public function setHeure_prise_en_charge(\DateTimeInterface $Heure_prise_en_charge): self
+    public function setHeure_prise_en_charge(?\DateTimeInterface $heure_prise_en_charge): self
     {
-        $this->Heure_prise_en_charge = $Heure_prise_en_charge;
+        $this->heure_prise_en_charge = $heure_prise_en_charge;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $Point_rendez_vous = null;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $point_rendez_vous = null;
 
     public function getPoint_rendez_vous(): ?string
     {
-        return $this->Point_rendez_vous;
+        return $this->point_rendez_vous;
     }
 
-    public function setPoint_rendez_vous(string $Point_rendez_vous): self
+    public function setPoint_rendez_vous(?string $point_rendez_vous): self
     {
-        $this->Point_rendez_vous = $Point_rendez_vous;
+        $this->point_rendez_vous = $point_rendez_vous;
         return $this;
     }
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $Informations_complementaires = null;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $informations_complementaires = null;
 
     public function getInformations_complementaires(): ?string
     {
-        return $this->Informations_complementaires;
+        return $this->informations_complementaires;
     }
 
-    public function setInformations_complementaires(?string $Informations_complementaires): self
+    public function setInformations_complementaires(?string $informations_complementaires): self
     {
-        $this->Informations_complementaires = $Informations_complementaires;
+        $this->informations_complementaires = $informations_complementaires;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $Statut = null;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $statut = null;
 
     public function getStatut(): ?string
     {
-        return $this->Statut;
+        return $this->statut;
     }
 
-    public function setStatut(string $Statut): self
+    public function setStatut(?string $statut): self
     {
-        $this->Statut = $Statut;
+        $this->statut = $statut;
         return $this;
     }
 
     public function getTypeAssistance(): ?string
     {
-        return $this->Type_assistance;
+        return $this->type_assistance;
     }
 
-    public function setTypeAssistance(string $Type_assistance): static
+    public function setTypeAssistance(?string $type_assistance): static
     {
-        $this->Type_assistance = $Type_assistance;
+        $this->type_assistance = $type_assistance;
 
         return $this;
     }
 
     public function getAeroportPort(): ?string
     {
-        return $this->Aeroport_Port;
+        return $this->aeroport_port;
     }
 
-    public function setAeroportPort(string $Aeroport_Port): static
+    public function setAeroportPort(?string $aeroport_port): static
     {
-        $this->Aeroport_Port = $Aeroport_Port;
+        $this->aeroport_port = $aeroport_port;
 
         return $this;
     }
 
     public function getHeurePriseEnCharge(): ?\DateTimeInterface
     {
-        return $this->Heure_prise_en_charge;
+        return $this->heure_prise_en_charge;
     }
 
-    public function setHeurePriseEnCharge(\DateTimeInterface $Heure_prise_en_charge): static
+    public function setHeurePriseEnCharge(?\DateTimeInterface $heure_prise_en_charge): static
     {
-        $this->Heure_prise_en_charge = $Heure_prise_en_charge;
+        $this->heure_prise_en_charge = $heure_prise_en_charge;
 
         return $this;
     }
 
     public function getPointRendezVous(): ?string
     {
-        return $this->Point_rendez_vous;
+        return $this->point_rendez_vous;
     }
 
-    public function setPointRendezVous(string $Point_rendez_vous): static
+    public function setPointRendezVous(?string $point_rendez_vous): static
     {
-        $this->Point_rendez_vous = $Point_rendez_vous;
+        $this->point_rendez_vous = $point_rendez_vous;
 
         return $this;
     }
 
     public function getInformationsComplementaires(): ?string
     {
-        return $this->Informations_complementaires;
+        return $this->informations_complementaires;
     }
 
-    public function setInformationsComplementaires(?string $Informations_complementaires): static
+    public function setInformationsComplementaires(?string $informations_complementaires): static
     {
-        $this->Informations_complementaires = $Informations_complementaires;
+        $this->informations_complementaires = $informations_complementaires;
 
         return $this;
     }

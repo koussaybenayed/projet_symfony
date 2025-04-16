@@ -8,7 +8,7 @@
   <table class="table table-striped table-hover">
     <thead class="thead-light">
         <tr>
-            <th>Id</th>
+            <th>User</th>
             <th>Response Text</th>
             <th>Created At</th>
             <th>Reclamation Status</th>
@@ -18,7 +18,7 @@
     <tbody>
     {% for response in responses %}
         <tr>
-            <td>{{ response.id }}</td>
+            <td>{{ response.reclamation.user.userEmail ?? 'N/A' }}</td>
             <td>{{ response.responseText }}</td>
             <td>{{ response.createdAt ? response.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             <td>

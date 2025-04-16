@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le Billet{% endblock %}
+
+{% block body %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="row">
+    <div class="col-md-10 col-lg-8 mx-auto">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Modifier le Billet</h5>
+        </div>
+        <div class="card-body">
+          {{ include('billet/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+          <a href="{{ path('app_billet_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+        </div>
+      </div>
+
+      {{ include('billet/_delete_form.html.twig') }}
+    </div>
+  </div>
+</div>
+{% endblock %}

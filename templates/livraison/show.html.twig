@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}🔍 Détails Livraison #{{ livraison.idLivraisons }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800">
+                <i class="fas fa-truck me-2"></i> 🔍 Détails Livraison 
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_livraison_index') }}"><i class="fas fa-list me-1"></i> 📋 Livraisons</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">🔍 Détails</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="btn-group">
+            <a href="{{ path('app_livraison_edit', {'id_livraisons': livraison.id_livraisons}) }}" 
+               class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i> ✏️ Modifier
+            </a>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" 
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">🔽 Actions</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="{{ path('app_livraison_index') }}">
+                        <i class="fas fa-arrow-left me-1"></i> ↩️ Retour à la liste
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form method="post" action="{{ path('app_livraison_delete', {'id_livraisons': livraison.id_livraisons}) }}" 
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette livraison?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ livraison.id_livraisons) }}">
+                        <button type="submit" class="dropdown-item text-danger">
+                            <i class="fas fa-trash-alt me-1"></i> 🗑️ Supprimer
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-primary text-white">
+            <h5 class="m-0 font-weight-bold"><i class="fas fa-info-circle me-2"></i> ℹ️ Informations sur la livraison</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detail-card mb-4 p-4 border rounded">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">
+                            <i class="fas fa-calendar-alt me-1"></i> 📅 Dates
+                        </h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="mb-1"><strong>📅 Créée le:</strong></p>
+                                <p class="text-dark">
+                                    <i class="far fa-clock me-2"></i>
+                                    {{ livraison.createdAt ? livraison.createdAt|date('d/m/Y à H:i') : '🕒 N/A' }}
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1"><strong>⏳ Livraison estimée:</strong></p>
+                                <p class="text-dark">
+                                    <i class="far fa-calendar-check me-2"></i>
+                                    {{ livraison.estimatedDelivery ? livraison.estimatedDelivery|date('d/m/Y') : '🕒 N/A' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="detail-card mb-4 p-4 border rounded">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">
+                            <i class="fas fa-calculator me-1"></i> 📊 Détails techniques
+                        </h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="mb-1"><strong>⚖️ Poids du colis:</strong></p>
+                                <p class="text-dark">
+                                    <i class="fas fa-weight-hanging me-2"></i>
+                                    {{ livraison.poidsColis }} kg
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1"><strong>💰 Coût de livraison:</strong></p>
+                                <p class="text-success fw-bold">
+                                    <i class="fas fa-euro-sign me-2"></i>
+                                    {{ livraison.deliveryCost }} €
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="detail-card p-4 border rounded">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">
+                            <i class="fas fa-tag me-1"></i> 🏷️ Statut
+                        </h6>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-{{ livraison.destinationStatus == 'delivered' ? 'success' : 
+                                (livraison.destinationStatus == 'pending' ? 'warning' : 
+                                (livraison.destinationStatus == 'cancelled' ? 'danger' : 'info')) }} p-2 me-3">
+                                {% if livraison.destinationStatus == 'delivered' %}
+                                    ✅ 
+                                {% elseif livraison.destinationStatus == 'pending' %}
+                                    ⏳ 
+                                {% elseif livraison.destinationStatus == 'cancelled' %}
+                                    ❌ 
+                                {% else %}
+                                    ℹ️ 
+                                {% endif %}
+                                {{ livraison.destinationStatus|capitalize }}
+                            </span>
+                            <small class="text-muted">
+                                <i class="fas fa-history me-1"></i>
+                                Dernière mise à jour: {{ livraison.createdAt ? livraison.createdAt|date('d/m/Y à H:i') : '🕒 N/A' }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

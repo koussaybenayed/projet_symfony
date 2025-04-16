@@ -1,0 +1,193 @@
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                {{ form_label(form.livraison, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.livraison) }}
+                <div class="invalid-feedback d-block text-danger">
+                    {{ form_errors(form.livraison) }}
+                </div>
+                <small class="form-text text-muted">📦 Sélectionnez le colis à contrôler</small>
+            </div>
+            
+            <div class="form-group mb-3">
+                {{ form_label(form.pays_douane, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.pays_douane) }}
+                <div class="invalid-feedback d-block text-danger">
+                    {{ form_errors(form.pays_douane) }}
+                </div>
+                <small class="form-text text-muted">🌍 Entrez un pays valide dans notre liste</small>
+                
+                <datalist id="pays-list">
+                    <option value="France">
+                    <option value="Belgique">
+                    <option value="Suisse">
+                    <option value="Allemagne">
+                    <option value="Espagne">
+                    <option value="Italie">
+                    <option value="Royaume-Uni">
+                    <option value="Pays-Bas">
+                    <!-- Ajoutez d'autres pays de votre liste ici -->
+                </datalist>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                {{ form_label(form.statut, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.statut) }}
+                <div class="invalid-feedback d-block text-danger">
+                    {{ form_errors(form.statut) }}
+                </div>
+               
+            </div>
+            
+            <div class="form-group mb-3">
+                {{ form_label(form.date_controle, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.date_controle) }}
+                <div class="invalid-feedback d-block text-danger">
+                    {{ form_errors(form.date_controle) }}
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mb-3">
+        {{ form_label(form.commentaires, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+        {{ form_widget(form.commentaires) }}
+        <div class="invalid-feedback d-block text-danger">
+            {{ form_errors(form.commentaires) }}
+        </div>
+        <small class="form-text text-muted">✏️ Maximum 50 caractères <span id="char-count">0</span>/50</small>
+    </div>
+
+    {{ form_rest(form) }}
+    
+    <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-save me-1"></i> {{ button_label|default('💾 Enregistrer') }}
+        </button>
+    </div>
+{{ form_end(form) }}
+
+<script>
+// JavaScript pour activer la validation côté client
+(function() {
+    'use strict';
+    
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation');
+    
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    });
+    
+    // Date validation - Afficher un message d'erreur pour les dates passées
+var dateInput = document.querySelector('input[type="date"]');
+if (dateInput) {
+    // Obtenir la date d'aujourd'hui au format YYYY-MM-DD
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var todayFormatted = today.toISOString().split('T')[0];
+    
+    // Créer ou récupérer un élément pour le message d'erreur
+    var errorDiv = dateInput.parentElement.querySelector('.invalid-feedback');
+    if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'invalid-feedback';
+        dateInput.parentElement.appendChild(errorDiv);
+    }
+    
+    dateInput.addEventListener('change', function() {
+        var selectedDate = new Date(this.value);
+        selectedDate.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+            // Date dans le passé - afficher l'erreur
+            this.setCustomValidity('La date doit être dans le futur');
+            errorDiv.textContent = 'La date doit être dans le futur';
+            
+            // Ajouter la classe is-invalid pour afficher le message d'erreur
+            this.classList.add('is-invalid');
+            this.classList.remove('is-valid');
+            
+            // Rendre le message d'erreur visible
+            errorDiv.style.display = 'block';
+        } else {
+            // Date correcte - effacer l'erreur
+            this.setCustomValidity('');
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+            errorDiv.style.display = 'none';
+        }
+    });
+    
+    // Vérification initiale au chargement de la page si une date est déjà sélectionnée
+    if (dateInput.value) {
+        var event = new Event('change');
+        dateInput.dispatchEvent(event);
+    }
+}
+    
+    // Compteur de caractères pour les commentaires avec limite de 50 caractères
+var commentairesTextarea = document.querySelector('textarea[name$="[commentaires]"]');
+var charCount = document.getElementById('char-count');
+var errorMessage = document.getElementById('error-message'); // Élément pour afficher le message d'erreur
+
+// Si ces éléments n'existent pas, créer le message d'erreur
+if (!errorMessage && commentairesTextarea) {
+    errorMessage = document.createElement('div');
+    errorMessage.id = 'error-message';
+    errorMessage.className = 'text-danger mt-1 d-none'; // Caché par défaut
+    errorMessage.textContent = 'Le commentaire ne peut pas dépasser 50 caractères.';
+    commentairesTextarea.parentNode.insertBefore(errorMessage, commentairesTextarea.nextSibling);
+}
+
+if (commentairesTextarea && charCount) {
+    function updateCharCount() {
+        var currentLength = commentairesTextarea.value.length;
+        charCount.textContent = currentLength;
+        
+        if (currentLength > 50) {
+            // Afficher le compteur en rouge et en gras
+            charCount.classList.add('text-danger');
+            charCount.classList.add('fw-bold');
+            
+            // Afficher le message d'erreur
+            if (errorMessage) {
+                errorMessage.classList.remove('d-none');
+            }
+        } else {
+            // Style normal pour le compteur
+            charCount.classList.remove('text-danger');
+            charCount.classList.remove('fw-bold');
+            
+            // Cacher le message d'erreur
+            if (errorMessage) {
+                errorMessage.classList.add('d-none');
+            }
+        }
+    }
+    
+    // Empêcher d'écrire plus de 50 caractères
+    commentairesTextarea.addEventListener('input', function(e) {
+        if (this.value.length > 50) {
+            this.value = this.value.substring(0, 50);
+        }
+        updateCharCount();
+    });
+    
+    // Initialiser le compteur au chargement
+    updateCharCount();
+}
+})();
+</script>

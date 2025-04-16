@@ -1,0 +1,47 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Facturisation{% endblock %}
+
+{% block body %}
+    <div style="text-align:center; margin-bottom: 20px;">
+        <h1 style="color: #ff5733; font-size: 30px;">
+            <i class="fas fa-file-invoice" style="font-size: 30px; vertical-align: middle; margin-right: 10px;"></i>
+            Gestion de Facturation
+        </h1>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; margin-bottom: 20px;">
+        <thead>
+            <tr style="background-color: #f9f9f9;">
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">User</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">Méthode de paiement</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">Montant</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">Date de paiement</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">Statut</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for facturisation in facturisations %}
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.user.userEmail ?? 'N/A' }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.paymentMethod }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.amount }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.paymentDate ? facturisation.paymentDate|date('Y-m-d H:i') : 'N/A' }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.status }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">
+                    <a href="{{ path('app_facturisation_show', {'id': facturisation.id}) }}" 
+                       style="color: white; background-color: green; padding: 8px 12px; text-decoration: none; border-radius: 5px; margin-right: 5px; display: inline-block;">Afficher</a>
+               
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; border: 1px solid #ddd; padding: 12px;">Aucun enregistrement trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+   
+{% endblock %}
