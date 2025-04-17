@@ -47,7 +47,7 @@ class Livraison
         return $this->estimated_delivery;
     }
 
-    public function setEstimated_delivery(\DateTimeInterface $estimated_delivery): self
+    public function setEstimated_delivery(?\DateTimeInterface $estimated_delivery): self
     {
         $this->estimated_delivery = $estimated_delivery;
         return $this;
@@ -64,7 +64,7 @@ class Livraison
         return $this->delivery_cost;
     }
 
-    public function setDelivery_cost(float $delivery_cost): self
+    public function setDelivery_cost(?float $delivery_cost): self
     {
         $this->delivery_cost = $delivery_cost;
         return $this;
@@ -79,13 +79,14 @@ class Livraison
         return $this->created_at;
     }
 
-    public function setCreated_at(\DateTimeInterface $created_at): self
+    public function setCreated_at(?\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: 'integer', nullable: false)]
+    #[Assert\NotBlank(message: "Le poids du colis est obligatoire")]
     #[Assert\Type(type: "integer", message: "Le poids du colis doit être un nombre entier")]
     #[Assert\PositiveOrZero(message: "Le poids du colis ne peut pas être négatif")]
     #[Assert\LessThanOrEqual(
@@ -106,7 +107,8 @@ class Livraison
     }
     
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: "Le statut de destination est obligatoire")]
     #[Assert\Length(
         max: 255,
         maxMessage: "Le statut de destination ne peut pas dépasser {{ limit }} caractères"
@@ -134,7 +136,7 @@ class Livraison
         return $this->estimated_delivery;
     }
 
-    public function setEstimatedDelivery(\DateTimeInterface $estimated_delivery): static
+    public function setEstimatedDelivery(?\DateTimeInterface $estimated_delivery): static
     {
         $this->estimated_delivery = $estimated_delivery;
 
@@ -146,7 +148,7 @@ class Livraison
         return $this->delivery_cost;
     }
 
-    public function setDeliveryCost(string $delivery_cost): static
+    public function setDeliveryCost(?string $delivery_cost): static
     {
         $this->delivery_cost = $delivery_cost;
 
@@ -158,7 +160,7 @@ class Livraison
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeInterface $created_at): static
+    public function setCreatedAt(?\DateTimeInterface $created_at): static
     {
         $this->created_at = $created_at;
 

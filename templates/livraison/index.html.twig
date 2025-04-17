@@ -30,10 +30,10 @@
                 <div class="col-md-4">
                     <select name="status" class="form-select">
                         <option value="all" {% if selectedStatus is not defined or selectedStatus == 'all' %}selected{% endif %}>Tous les statuts</option>
-                        <option value="pending" {% if selectedStatus == 'pending' %}selected{% endif %}>En attente</option>
-                        <option value="in_progress" {% if selectedStatus == 'in_progress' %}selected{% endif %}>En cours</option>
-                        <option value="delivered" {% if selectedStatus == 'delivered' %}selected{% endif %}>Livré</option>
-                        <option value="cancelled" {% if selectedStatus == 'cancelled' %}selected{% endif %}>Annulé</option>
+                        <option value="pending" {% if selectedStatus == 'En attente' %}selected{% endif %}>En attente</option>
+                        <option value="in_progress" {% if selectedStatus == 'En cours' %}selected{% endif %}>En cours</option>
+                        <option value="delivered" {% if selectedStatus == 'dLivré' %}selected{% endif %}>Livré</option>
+                        <option value="cancelled" {% if selectedStatus == 'Annulé' %}selected{% endif %}>Annulé</option>
                     </select>
                 </div>
                 <div class="col-md-2">

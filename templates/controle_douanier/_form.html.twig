@@ -3,8 +3,8 @@
         <div class="col-md-6">
             <div class="form-group mb-3">
                 {{ form_label(form.livraison, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                {{ form_widget(form.livraison) }}
-                <div class="invalid-feedback d-block text-danger">
+                {{ form_widget(form.livraison, {'attr': {'required': 'required'}}) }}
+                <div class="invalid-feedback d-block text-danger" id="error-livraison">
                     {{ form_errors(form.livraison) }}
                 </div>
                 <small class="form-text text-muted">📦 Sélectionnez le colis à contrôler</small>
@@ -12,8 +12,8 @@
             
             <div class="form-group mb-3">
                 {{ form_label(form.pays_douane, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                {{ form_widget(form.pays_douane) }}
-                <div class="invalid-feedback d-block text-danger">
+                {{ form_widget(form.pays_douane, {'attr': {'required': 'required'}}) }}
+                <div class="invalid-feedback d-block text-danger" id="error-pays">
                     {{ form_errors(form.pays_douane) }}
                 </div>
                 <small class="form-text text-muted">🌍 Entrez un pays valide dans notre liste</small>
@@ -35,20 +35,20 @@
         <div class="col-md-6">
             <div class="form-group mb-3">
                 {{ form_label(form.statut, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                {{ form_widget(form.statut) }}
-                <div class="invalid-feedback d-block text-danger">
+                {{ form_widget(form.statut, {'attr': {'required': 'required'}}) }}
+                <div class="invalid-feedback d-block text-danger" id="error-statut">
                     {{ form_errors(form.statut) }}
                 </div>
-               
+                <small class="form-text text-muted">🔄 Sélectionnez le statut du contrôle</small>
             </div>
             
             <div class="form-group mb-3">
                 {{ form_label(form.date_controle, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                {{ form_widget(form.date_controle) }}
-                <div class="invalid-feedback d-block text-danger">
+                {{ form_widget(form.date_controle, {'attr': {'required': 'required'}}) }}
+                <div class="invalid-feedback d-block text-danger" id="error-date">
                     {{ form_errors(form.date_controle) }}
                 </div>
-                
+                <small class="form-text text-muted">📅 La date doit être dans le futur</small>
             </div>
         </div>
     </div>
@@ -56,7 +56,7 @@
     <div class="form-group mb-3">
         {{ form_label(form.commentaires, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
         {{ form_widget(form.commentaires) }}
-        <div class="invalid-feedback d-block text-danger">
+        <div class="invalid-feedback d-block text-danger" id="error-commentaires">
             {{ form_errors(form.commentaires) }}
         </div>
         <small class="form-text text-muted">✏️ Maximum 50 caractères <span id="char-count">0</span>/50</small>
@@ -65,7 +65,7 @@
     {{ form_rest(form) }}
     
     <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
-        <button type="submit" class="btn btn-primary btn-lg">
+        <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
             <i class="fas fa-save me-1"></i> {{ button_label|default('💾 Enregistrer') }}
         </button>
     </div>
@@ -82,9 +82,64 @@
     // Loop over them and prevent submission
     Array.prototype.slice.call(forms).forEach(function(form) {
         form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
+            let isValid = true;
+            
+            // Validation de la livraison
+            const livraisonSelect = form.querySelector('select[name$="[livraison]"]');
+            if (livraisonSelect && !livraisonSelect.value) {
+                document.getElementById('error-livraison').textContent = 'Ce champ est obligatoire. Veuillez sélectionner un colis.';
+                document.getElementById('error-livraison').style.display = 'block';
+                livraisonSelect.classList.add('is-invalid');
+                isValid = false;
+            } else if (livraisonSelect) {
+                document.getElementById('error-livraison').style.display = 'none';
+                livraisonSelect.classList.remove('is-invalid');
+            }
+            
+            // Validation du pays
+            const paysInput = form.querySelector('input[name$="[pays_douane]"]');
+            if (paysInput && !paysInput.value.trim()) {
+                document.getElementById('error-pays').textContent = 'Ce champ est obligatoire. Veuillez entrer un pays.';
+                document.getElementById('error-pays').style.display = 'block';
+                paysInput.classList.add('is-invalid');
+                isValid = false;
+            } else if (paysInput) {
+                document.getElementById('error-pays').style.display = 'none';
+                paysInput.classList.remove('is-invalid');
+            }
+            
+            // Validation du statut
+            const statutSelect = form.querySelector('select[name$="[statut]"]');
+            if (statutSelect && !statutSelect.value) {
+                document.getElementById('error-statut').textContent = 'Ce champ est obligatoire. Veuillez sélectionner un statut.';
+                document.getElementById('error-statut').style.display = 'block';
+                statutSelect.classList.add('is-invalid');
+                isValid = false;
+            } else if (statutSelect) {
+                document.getElementById('error-statut').style.display = 'none';
+                statutSelect.classList.remove('is-invalid');
+            }
+            
+            // Validation de la date
+            const dateInput = form.querySelector('input[name$="[date_controle]"]');
+            if (dateInput && !dateInput.value) {
+                document.getElementById('error-date').textContent = 'Ce champ est obligatoire. Veuillez sélectionner une date.';
+                document.getElementById('error-date').style.display = 'block';
+                dateInput.classList.add('is-invalid');
+                isValid = false;
+            } else if (dateInput) {
+                // La validation de la date future est gérée dans un autre bloc
+            }
+            
+            if (!isValid) {
                 event.preventDefault();
                 event.stopPropagation();
+                
+                // Faire défiler jusqu'au premier message d'erreur
+                const firstError = document.querySelector('.invalid-feedback[style="display: block"]');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }
             
             form.classList.add('was-validated');
@@ -92,102 +147,164 @@
     });
     
     // Date validation - Afficher un message d'erreur pour les dates passées
-var dateInput = document.querySelector('input[type="date"]');
-if (dateInput) {
-    // Obtenir la date d'aujourd'hui au format YYYY-MM-DD
-    var today = new Date();
-    today.setHours(0, 0, 0, 0);
-    var todayFormatted = today.toISOString().split('T')[0];
-    
-    // Créer ou récupérer un élément pour le message d'erreur
-    var errorDiv = dateInput.parentElement.querySelector('.invalid-feedback');
-    if (!errorDiv) {
-        errorDiv = document.createElement('div');
-        errorDiv.className = 'invalid-feedback';
-        dateInput.parentElement.appendChild(errorDiv);
-    }
-    
-    dateInput.addEventListener('change', function() {
-        var selectedDate = new Date(this.value);
-        selectedDate.setHours(0, 0, 0, 0);
+    var dateInput = document.querySelector('input[type="date"]');
+    if (dateInput) {
+        // Obtenir la date d'aujourd'hui au format YYYY-MM-DD
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var todayFormatted = today.toISOString().split('T')[0];
         
-        if (selectedDate < today) {
-            // Date dans le passé - afficher l'erreur
-            this.setCustomValidity('La date doit être dans le futur');
-            errorDiv.textContent = 'La date doit être dans le futur';
+        // Créer ou récupérer un élément pour le message d'erreur
+        var errorDate = document.getElementById('error-date');
+        
+        dateInput.addEventListener('change', function() {
+            if (!this.value) {
+                errorDate.textContent = 'Ce champ est obligatoire. Veuillez sélectionner une date.';
+                errorDate.style.display = 'block';
+                this.classList.add('is-invalid');
+                return;
+            }
             
-            // Ajouter la classe is-invalid pour afficher le message d'erreur
-            this.classList.add('is-invalid');
-            this.classList.remove('is-valid');
+            var selectedDate = new Date(this.value);
+            selectedDate.setHours(0, 0, 0, 0);
             
-            // Rendre le message d'erreur visible
-            errorDiv.style.display = 'block';
-        } else {
-            // Date correcte - effacer l'erreur
-            this.setCustomValidity('');
-            this.classList.remove('is-invalid');
-            this.classList.add('is-valid');
-            errorDiv.style.display = 'none';
+            if (selectedDate <= today) {
+                // Date dans le passé - afficher l'erreur
+                this.setCustomValidity('La date doit être dans le futur');
+                errorDate.textContent = 'La date doit être dans le futur (pas aujourd\'hui ni dans le passé)';
+                errorDate.style.display = 'block';
+                this.classList.add('is-invalid');
+            } else {
+                // Date correcte - effacer l'erreur
+                this.setCustomValidity('');
+                errorDate.style.display = 'none';
+                this.classList.remove('is-invalid');
+            }
+        });
+        
+        // Vérification initiale au chargement de la page si une date est déjà sélectionnée
+        if (dateInput.value) {
+            var event = new Event('change');
+            dateInput.dispatchEvent(event);
         }
-    });
-    
-    // Vérification initiale au chargement de la page si une date est déjà sélectionnée
-    if (dateInput.value) {
-        var event = new Event('change');
-        dateInput.dispatchEvent(event);
     }
-}
+    
+    // Validation du pays au fur et à mesure de la saisie
+    var paysInput = document.querySelector('input[name$="[pays_douane]"]');
+    var errorPays = document.getElementById('error-pays');
+    if (paysInput) {
+        paysInput.addEventListener('input', function() {
+            if (!this.value.trim()) {
+                errorPays.textContent = 'Ce champ est obligatoire. Veuillez entrer un pays.';
+                errorPays.style.display = 'block';
+                this.classList.add('is-invalid');
+            } else if (!/^[a-zA-ZÀ-ÿ\s\-\']+$/.test(this.value)) {
+                errorPays.textContent = 'Le pays ne doit contenir que des lettres, espaces, apostrophes et tirets';
+                errorPays.style.display = 'block';
+                this.classList.add('is-invalid');
+            } else {
+                errorPays.style.display = 'none';
+                this.classList.remove('is-invalid');
+            }
+        });
+    }
+    
+    // Validation du statut en temps réel
+    var statutSelect = document.querySelector('select[name$="[statut]"]');
+    var errorStatut = document.getElementById('error-statut');
+    if (statutSelect) {
+        statutSelect.addEventListener('change', function() {
+            if (!this.value) {
+                errorStatut.textContent = 'Ce champ est obligatoire. Veuillez sélectionner un statut.';
+                errorStatut.style.display = 'block';
+                this.classList.add('is-invalid');
+            } else {
+                errorStatut.style.display = 'none';
+                this.classList.remove('is-invalid');
+            }
+        });
+    }
+    
+    // Validation de la livraison en temps réel
+    var livraisonSelect = document.querySelector('select[name$="[livraison]"]');
+    var errorLivraison = document.getElementById('error-livraison');
+    if (livraisonSelect) {
+        livraisonSelect.addEventListener('change', function() {
+            if (!this.value) {
+                errorLivraison.textContent = 'Ce champ est obligatoire. Veuillez sélectionner un colis.';
+                errorLivraison.style.display = 'block';
+                this.classList.add('is-invalid');
+            } else {
+                errorLivraison.style.display = 'none';
+                this.classList.remove('is-invalid');
+            }
+        });
+    }
     
     // Compteur de caractères pour les commentaires avec limite de 50 caractères
-var commentairesTextarea = document.querySelector('textarea[name$="[commentaires]"]');
-var charCount = document.getElementById('char-count');
-var errorMessage = document.getElementById('error-message'); // Élément pour afficher le message d'erreur
+    var commentairesTextarea = document.querySelector('textarea[name$="[commentaires]"]');
+    var charCount = document.getElementById('char-count');
+    var errorCommentaires = document.getElementById('error-commentaires');
 
-// Si ces éléments n'existent pas, créer le message d'erreur
-if (!errorMessage && commentairesTextarea) {
-    errorMessage = document.createElement('div');
-    errorMessage.id = 'error-message';
-    errorMessage.className = 'text-danger mt-1 d-none'; // Caché par défaut
-    errorMessage.textContent = 'Le commentaire ne peut pas dépasser 50 caractères.';
-    commentairesTextarea.parentNode.insertBefore(errorMessage, commentairesTextarea.nextSibling);
-}
-
-if (commentairesTextarea && charCount) {
-    function updateCharCount() {
-        var currentLength = commentairesTextarea.value.length;
-        charCount.textContent = currentLength;
+    if (commentairesTextarea && charCount) {
+        function updateCharCount() {
+            var currentLength = commentairesTextarea.value.length;
+            charCount.textContent = currentLength;
+            
+            if (currentLength > 50) {
+                // Afficher le compteur en rouge et en gras
+                charCount.classList.add('text-danger');
+                charCount.classList.add('fw-bold');
+                
+                // Afficher le message d'erreur
+                errorCommentaires.textContent = 'Le commentaire ne peut pas dépasser 50 caractères.';
+                errorCommentaires.style.display = 'block';
+                commentairesTextarea.classList.add('is-invalid');
+            } else {
+                // Style normal pour le compteur
+                charCount.classList.remove('text-danger');
+                charCount.classList.remove('fw-bold');
+                
+                // Cacher le message d'erreur
+                errorCommentaires.style.display = 'none';
+                commentairesTextarea.classList.remove('is-invalid');
+            }
+        }
         
-        if (currentLength > 50) {
-            // Afficher le compteur en rouge et en gras
-            charCount.classList.add('text-danger');
-            charCount.classList.add('fw-bold');
-            
-            // Afficher le message d'erreur
-            if (errorMessage) {
-                errorMessage.classList.remove('d-none');
+        // Empêcher d'écrire plus de 50 caractères
+        commentairesTextarea.addEventListener('input', function(e) {
+            if (this.value.length > 50) {
+                this.value = this.value.substring(0, 50);
             }
-        } else {
-            // Style normal pour le compteur
-            charCount.classList.remove('text-danger');
-            charCount.classList.remove('fw-bold');
-            
-            // Cacher le message d'erreur
-            if (errorMessage) {
-                errorMessage.classList.add('d-none');
-            }
-        }
-    }
-    
-    // Empêcher d'écrire plus de 50 caractères
-    commentairesTextarea.addEventListener('input', function(e) {
-        if (this.value.length > 50) {
-            this.value = this.value.substring(0, 50);
-        }
+            updateCharCount();
+        });
+        
+        // Initialiser le compteur au chargement
         updateCharCount();
+    }
+
+    // Vérification initiale de tous les champs au chargement de la page
+    window.addEventListener('load', function() {
+        // Simuler des événements pour déclencher la validation initiale
+        if (livraisonSelect && !livraisonSelect.value) {
+            var event = new Event('change');
+            livraisonSelect.dispatchEvent(event);
+        }
+
+        if (paysInput && !paysInput.value) {
+            var event = new Event('input');
+            paysInput.dispatchEvent(event);
+        }
+
+        if (statutSelect && !statutSelect.value) {
+            var event = new Event('change');
+            statutSelect.dispatchEvent(event);
+        }
+
+        if (dateInput && !dateInput.value) {
+            var event = new Event('change');
+            dateInput.dispatchEvent(event);
+        }
     });
-    
-    // Initialiser le compteur au chargement
-    updateCharCount();
-}
 })();
 </script>

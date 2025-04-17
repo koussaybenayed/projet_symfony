@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class ControleDouanierType extends AbstractType
 {
-    // Liste des pays valides
+   
     private const PAYS_VALIDES = [
         'France', 'Belgique', 'Suisse', 'Allemagne', 'Espagne', 'Italie', 
         'Royaume-Uni', 'Pays-Bas', 'Luxembourg', 'Portugal', 'Autriche',

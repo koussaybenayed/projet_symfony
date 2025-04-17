@@ -24,6 +24,7 @@ class LivraisonType extends AbstractType
                     'min' => (new \DateTime())->format('Y-m-d'),
                 ],
                 'help' => 'La date doit être dans le futur',
+                'required' => true,
             ])
             ->add('delivery_cost', NumberType::class, [
                 'label' => 'Coût de livraison (€)',
@@ -32,10 +33,11 @@ class LivraisonType extends AbstractType
                     'min' => 0,
                     'step' => '0.01',
                 ],
+                'required' => true,
             ])
             ->add('poids_colis', NumberType::class, [
                 'label' => 'Poids du colis (kg)',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control',
                     'min' => 0,
@@ -45,7 +47,7 @@ class LivraisonType extends AbstractType
             ])
             ->add('destination_status', ChoiceType::class, [
                 'label' => 'Statut de destination',
-                'required' => false,
+                'required' => true,
                 'choices' => [
                     'En attente' => 'en_attente',
                     'En cours' => 'en_cours',
