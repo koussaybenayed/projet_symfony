@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réduction - Détails{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card border-0 shadow-lg" style="background-color: #e6f0ff;">
+        <div class="card-header bg-primary text-white text-center">
+            <h5>📄 Détails de la Réduction</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <h6><strong>🏢 Entreprise : Navifly</strong></h6>
+                    <p>📍 Adresse de l'entreprise</p>
+                </div>
+                <div class="col-6 text-right">
+                    <h6><strong>🗓️ Date :</strong> {{ 'now'|date('Y-m-d') }}</h6>
+                    <h6><strong>🔑 Code :</strong> {{ reduction.code }}</h6>
+                </div>
+            </div>
+
+            <hr>
+
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Description</th>
+                        <th class="text-right">Valeur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>💸 Montant de la Réduction</td>
+                        <td class="text-right">{{ reduction.discountAmount }}</td>
+                    </tr>
+                    <tr>
+                        <td>⏳ Date d'Expiration</td>
+                        <td class="text-right">{{ reduction.expirationDate ? reduction.expirationDate|date('Y-m-d H:i') : '' }}</td>
+                    </tr>
+                    <tr>
+                        <td>📜 Texte de Condition</td>
+                        <td class="text-right">{{ reduction.conditionText }}</td>
+                    </tr>
+                    <tr>
+                        <td>📝 Date de Création</td>
+                        <td class="text-right">{{ reduction.createdAt ? reduction.createdAt|date('Y-m-d H:i') : '' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ path('app_reduction_index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Revenir à la liste
+                </a>
+                <a href="{{ path('app_reduction_edit', {'id': reduction.id}) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+            </div>
+
+            <div class="mt-3">
+                {{ include('reduction/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% block body %}
+<div class="signup-container">
+   
+
+    {{ form_start(form,{'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+
+    <div class="form-group">
+        {{ form_widget(form.user_username, {'attr': {'class': 'form-control', 'placeholder': 'Username'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_email, {'attr': {'class': 'form-control', 'placeholder': 'Email'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_password, {'attr': {'class': 'form-control', 'placeholder': 'Password'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_firstname, {'attr': {'class': 'form-control', 'placeholder': 'First Name'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_lastname, {'attr': {'class': 'form-control', 'placeholder': 'Last Name'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_birthday, {'attr': {'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_gender, {'attr': {'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_picture, {'attr': {'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_phonenumber, {'attr': {'class': 'form-control', 'placeholder': 'Phone Number'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.user_level, {'attr': {'class': 'form-control', 'placeholder': 'Level'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.role, {'attr': {'class': 'form-control'}}) }}
+    </div>
+
+    <button type="submit" class="btn-submit">{{ button_label|default('Sign Up') }}</button>
+
+    {{ form_end(form) }}
+
+</div>
+{% endblock %}

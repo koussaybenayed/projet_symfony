@@ -1,0 +1,46 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Assistance{% endblock %}
+
+{% block body %}
+    <h1>Assistance</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ assistance.id }}</td>
+            </tr>
+            <tr>
+                <th>Type_assistance</th>
+                <td>{{ assistance.typeAssistance }}</td>
+            </tr>
+            <tr>
+                <th>Aeroport_port</th>
+                <td>{{ assistance.aeroportPort }}</td>
+            </tr>
+            <tr>
+                <th>Heure_prise_en_charge</th>
+                <td>{{ assistance.heurePriseEnCharge ? assistance.heurePriseEnCharge|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Point_rendez_vous</th>
+                <td>{{ assistance.pointRendezVous }}</td>
+            </tr>
+            <tr>
+                <th>Informations_complementaires</th>
+                <td>{{ assistance.informationsComplementaires }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>{{ assistance.statut }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_assistance_index') }}">back to list</a>
+
+    <a href="{{ path('app_assistance_edit', {'id': assistance.id}) }}">edit</a>
+
+    {{ include('assistance/_delete_form.html.twig') }}
+{% endblock %}

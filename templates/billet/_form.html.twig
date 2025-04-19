@@ -1,0 +1,44 @@
+{% block body %}
+<div class="col-xl">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Formulaire</h5>
+      <small class="text-body float-end">Veuillez remplir les champs</small>
+    </div>
+
+    <div class="card-body">
+      {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+      <div class="row">
+        {% for field in form %}
+          <div class="col-md-6 mb-4">
+            <label class="form-label" for="{{ field.vars.id }}">
+              {{ field.vars.label|default(field.vars.name)|capitalize }}
+            </label>
+            {{ form_widget(field, {
+              'attr': {
+                'class': 'form-control',
+                'id': field.vars.id
+              }
+            }) }}
+
+            {# ✅ Affichage des erreurs pour chaque champ #}
+            {{ form_errors(field) }}
+
+            {% if field.vars.help is defined %}
+              <div class="form-text">{{ field.vars.help }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="text-end">
+        <button type="submit" class="btn btn-primary">
+          {{ button_label|default('Enregistrer') }}
+        </button>
+      </div>
+
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+{% endblock %}

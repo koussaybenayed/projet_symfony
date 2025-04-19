@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New User{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            background-color: #fafafa;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        .signup-container {
+            max-width: 380px;
+            margin: 60px auto;
+            padding: 40px 30px;
+            background-color: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .signup-container h2 {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dbdbdb;
+            border-radius: 4px;
+            background-color: #fafafa;
+            font-size: 14px;
+        }
+
+        .btn-submit {
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .btn-submit:hover {
+            background-color: #007fd1;
+        }
+
+        .small-text {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="signup-container">
+        <h2>Create new User</h2>
+
+        {{ include('user/_form.html.twig') }}
+
+        <div class="small-text">
+            <a href="{{ path('app_user_index') }}">← Back to list</a>
+        </div>
+    </div>
+{% endblock %}

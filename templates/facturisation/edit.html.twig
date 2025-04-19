@@ -1,0 +1,30 @@
+
+ extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Facturisation{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0" style="background-color: #e6f0ff;"> {# bleu clair #}
+            <div class="card-header text-white" style="background-color: #007bff;">
+                <h2><i class="fas fa-file-invoice"></i> 📄➕ Nouvelle Facturisation</h2>
+            </div>
+            <div class="card-body">
+                <p class="text-center text-muted">Veuillez remplir les informations de facturisation ci-dessous 🧾</p>
+
+                <div class="d-flex justify-content-center">
+                    <div class="col-md-8">
+                        {{ include('facturisation/_form.html.twig') }}
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ path('app_facturisation_index') }}" class="btn btn-outline-primary">
+                        🔙 Retour à la liste des factures
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

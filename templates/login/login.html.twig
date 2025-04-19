@@ -1,0 +1,98 @@
+{% block title %}Login{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            background-color: #fafafa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            max-width: 350px;
+            margin: 60px auto;
+            padding: 40px;
+            background-color: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .login-container h1 {
+            font-weight: 600;
+            font-size: 24px;
+            margin-bottom: 24px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #dbdbdb;
+            border-radius: 6px;
+            background-color: #fafafa;
+        }
+
+        .login-container input:focus {
+            outline: none;
+            border-color: #a8a8a8;
+            background-color: #fff;
+        }
+
+        .login-container button {
+            margin-top: 16px;
+            width: 100%;
+            background-color: #0095f6;
+            border: none;
+            color: white;
+            padding: 10px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .alert {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .already-logged-in {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .already-logged-in a {
+            color: #0095f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="login-container">
+        <h1>Login</h1>
+
+        {% if error %}
+            <div class="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="already-logged-in">
+                You are logged in as {{ app.user.userIdentifier }} —
+                <a href="{{ path('app_logout') }}">Logout</a>
+            </div>
+        {% else %}
+            <form method="post">
+                <input type="text" value="{{ last_username }}" name="_username" placeholder="Username" required autofocus>
+                <input type="password" name="_password" placeholder="Password" required>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <button type="submit">Log in</button>
+            </form>
+        {% endif %}
+         <div class="small-text">
+        Already have an account?
+        <a href="{{ path('app_user_neww') }}">sign up</a> {# Replace "#" with your login route path if available #}
+    </div>
+    </div>
+{% endblock %}
