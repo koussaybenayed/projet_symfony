@@ -19,17 +19,46 @@ class Livraison
     #[ORM\Column(type: 'integer')]
     private ?int $id_livraisons = null;
 
+    #[ORM\Column(type: 'date', nullable: false)]
+    #[Assert\NotBlank(message: "La date de livraison estimée est obligatoire")]
+    #[Assert\GreaterThan("today", message: "La date de livraison estimée doit être dans le futur")]
+    private ?\DateTimeInterface $estimated_delivery = null;
+
+    #[ORM\Column(type: 'decimal', nullable: false)]
+    #[Assert\NotBlank(message: "Le coût de livraison est obligatoire")]
+    #[Assert\Positive(message: "Le coût de livraison doit être positif")]
+    #[Assert\Type(type: "numeric", message: "Le coût de livraison doit être un nombre")]
+    private ?float $delivery_cost = null;
+
+    #[ORM\Column(type: 'date', nullable: false)]
+    #[Assert\NotBlank(message: "La date de création est obligatoire")]
+    private ?\DateTimeInterface $created_at = null;
+
+    #[ORM\Column(type: 'integer', nullable: false)]
+    #[Assert\NotBlank(message: "Le poids du colis est obligatoire")]
+    #[Assert\Type(type: "integer", message: "Le poids du colis doit être un nombre entier")]
+    #[Assert\PositiveOrZero(message: "Le poids du colis ne peut pas être négatif")]
+    #[Assert\LessThanOrEqual(
+        value: 20,
+        message: "Le poids du colis ne doit pas dépasser 20 kg"
+    )]
+    private ?int $poids_colis = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: "Le statut de destination est obligatoire")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le statut de destination ne peut pas dépasser {{ limit }} caractères"
+    )]
+    private ?string $destination_status = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $transporteur = null;
+
     public function getId_livraisons(): ?int
     {
         return $this->id_livraisons;
     }
-    public function getFullTrackingNumber(): string
-{
-    $datePart = $this->created_at ? $this->created_at->format('Ymd') : '00000000';
-    $idPart = $this->id_livraisons ?? 0;
-    return 'TRK-' . $datePart . '-' . str_pad($idPart, 5, '0', STR_PAD_LEFT);
-}
-
 
     public function setId_livraisons(int $id_livraisons): self
     {
@@ -37,10 +66,12 @@ class Livraison
         return $this;
     }
 
-    #[ORM\Column(type: 'date', nullable: false)]
-    #[Assert\NotBlank(message: "La date de livraison estimée est obligatoire")]
-    #[Assert\GreaterThan("today", message: "La date de livraison estimée doit être dans le futur")]
-    private ?\DateTimeInterface $estimated_delivery = null;
+    public function getFullTrackingNumber(): string
+    {
+        $datePart = $this->created_at ? $this->created_at->format('Ymd') : '00000000';
+        $idPart = $this->id_livraisons ?? 0;
+        return 'TRK-' . $datePart . '-' . str_pad($idPart, 5, '0', STR_PAD_LEFT);
+    }
 
     public function getEstimated_delivery(): ?\DateTimeInterface
     {
@@ -53,12 +84,6 @@ class Livraison
         return $this;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: false)]
-    #[Assert\NotBlank(message: "Le coût de livraison est obligatoire")]
-    #[Assert\Positive(message: "Le coût de livraison doit être positif")]
-    #[Assert\Type(type: "numeric", message: "Le coût de livraison doit être un nombre")]
-    private ?float $delivery_cost = null;
-
     public function getDelivery_cost(): ?float
     {
         return $this->delivery_cost;
@@ -69,10 +94,6 @@ class Livraison
         $this->delivery_cost = $delivery_cost;
         return $this;
     }
-
-    #[ORM\Column(type: 'date', nullable: false)]
-    #[Assert\NotBlank(message: "La date de création est obligatoire")]
-    private ?\DateTimeInterface $created_at = null;
 
     public function getCreated_at(): ?\DateTimeInterface
     {
@@ -85,16 +106,6 @@ class Livraison
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    #[Assert\NotBlank(message: "Le poids du colis est obligatoire")]
-    #[Assert\Type(type: "integer", message: "Le poids du colis doit être un nombre entier")]
-    #[Assert\PositiveOrZero(message: "Le poids du colis ne peut pas être négatif")]
-    #[Assert\LessThanOrEqual(
-        value: 20,
-        message: "Le poids du colis ne doit pas dépasser 20 kg"
-    )]
-    private ?int $poids_colis = null;
-
     public function getPoids_colis(): ?int
     {
         return $this->poids_colis;
@@ -105,15 +116,6 @@ class Livraison
         $this->poids_colis = $poids_colis;
         return $this;
     }
-    
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    #[Assert\NotBlank(message: "Le statut de destination est obligatoire")]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "Le statut de destination ne peut pas dépasser {{ limit }} caractères"
-    )]
-    private ?string $destination_status = null;
 
     public function getDestination_status(): ?string
     {
@@ -139,7 +141,6 @@ class Livraison
     public function setEstimatedDelivery(?\DateTimeInterface $estimated_delivery): static
     {
         $this->estimated_delivery = $estimated_delivery;
-
         return $this;
     }
 
@@ -151,7 +152,6 @@ class Livraison
     public function setDeliveryCost(?string $delivery_cost): static
     {
         $this->delivery_cost = $delivery_cost;
-
         return $this;
     }
 
@@ -163,7 +163,6 @@ class Livraison
     public function setCreatedAt(?\DateTimeInterface $created_at): static
     {
         $this->created_at = $created_at;
-
         return $this;
     }
 
@@ -175,7 +174,6 @@ class Livraison
     public function setPoidsColis(?int $poids_colis): static
     {
         $this->poids_colis = $poids_colis;
-
         return $this;
     }
 
@@ -187,7 +185,17 @@ class Livraison
     public function setDestinationStatus(?string $destination_status): static
     {
         $this->destination_status = $destination_status;
+        return $this;
+    }
 
+    public function getTransporteur(): ?string
+    {
+        return $this->transporteur;
+    }
+
+    public function setTransporteur(?string $transporteur): self
+    {
+        $this->transporteur = $transporteur;
         return $this;
     }
 

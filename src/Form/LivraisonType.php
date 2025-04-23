@@ -1,6 +1,5 @@
 <?php
 
-// src/Form/LivraisonType.php
 namespace App\Form;
 
 use App\Entity\Livraison;
@@ -8,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -57,6 +57,21 @@ class LivraisonType extends AbstractType
                 'attr' => [
                     'class' => 'form-select',
                 ],
+            ])
+            ->add('transporteur', ChoiceType::class, [
+                'label' => 'Transporteur',
+                'required' => false,
+                'choices' => [
+                    'DHL' => 'DHL',
+                    'FedEx' => 'FedEx',
+                    'UPS' => 'UPS',
+                    'La Poste' => 'La Poste',
+                    'Chronopost' => 'Chronopost'
+                ],
+                'attr' => [
+                    'class' => 'form-select',
+                ],
+                'placeholder' => 'Sélectionnez un transporteur',
             ]);
     }
 

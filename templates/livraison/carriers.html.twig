@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transporteurs disponibles{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1>Transporteurs disponibles</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <button id="fetchCarriersBtn" class="btn btn-primary">
+                    <i class="fas fa-truck"></i> Récupérer les transporteurs
+                </button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Liste des transporteurs</h4>
+            </div>
+            <div class="card-body" id="carriersResult">
+                <p class="text-muted">Cliquez sur le bouton pour récupérer la liste des transporteurs.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fetchCarriersBtn = document.getElementById('fetchCarriersBtn');
+            const carriersResult = document.getElementById('carriersResult');
+            
+            fetchCarriersBtn.addEventListener('click', function() {
+                // Afficher un indicateur de chargement
+                carriersResult.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p>Chargement des transporteurs...</p></div>';
+                
+                // Envoyer la requête AJAX
+                fetch('{{ path('app_livraison_fetch_carriers') }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let html = '<div class="table-responsive"><table class="table table-striped"><thead><tr><th>Nom du transporteur</th><th>ID</th></tr></thead><tbody>';
+                        
+                        data.carriers.forEach(carrier => {
+                            html += `<tr><td>${carrier.name}</td><td>${carrier.id || 'N/A'}</td></tr>`;
+                        });
+                        
+                        html += '</tbody></table></div>';
+                        carriersResult.innerHTML = html;
+                    } else {
+                        carriersResult.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Erreur: ${data.message}
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    carriersResult.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Erreur lors de la communication avec le serveur: ${error}
+                        </div>
+                    `;
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Météo pour les livraisons{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1>Informations météo</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="weatherForm" class="row g-3">
+                    <div class="col-md-8">
+                        <label for="city" class="form-label">Ville</label>
+                        <input type="text" class="form-control" id="city" name="city" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary form-control">
+                            <i class="fas fa-cloud"></i> Récupérer la météo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Résultat météo</h4>
+            </div>
+            <div class="card-body" id="weatherResult">
+                <p class="text-muted">Aucune donnée météo. Veuillez saisir une ville.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const weatherForm = document.getElementById('weatherForm');
+            const weatherResult = document.getElementById('weatherResult');
+            
+            weatherForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const city = document.getElementById('city').value;
+                if (!city) {
+                    alert('Veuillez entrer une ville');
+                    return;
+                }
+                
+                // Afficher un indicateur de chargement
+                weatherResult.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p>Chargement des données météo...</p></div>';
+                
+                // Envoyer la requête AJAX
+                fetch('{{ path('app_livraison_fetch_weather') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new URLSearchParams({
+                        'city': city
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        weatherResult.innerHTML = `
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h3 class="display-4">${data.weather.temperature}°C</h3>
+                                            <p class="lead">${data.weather.condition}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Humidité</h5>
+                                                    <p class="card-text">${data.weather.humidity}%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Vitesse du vent</h5>
+                                                    <p class="card-text">${data.weather.wind_speed} km/h</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info mt-3">
+                                        <p>Ces informations météo peuvent être utiles pour planifier vos livraisons.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        weatherResult.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Erreur: ${data.message}
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    weatherResult.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Erreur lors de la communication avec le serveur: ${error}
+                        </div>
+                    `;
+                });
+            });
+        });
+    </script>
+{% endblock %}
