@@ -15,7 +15,25 @@ class ResponseRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Response::class);
     }
+    
 
+   
+public function findBySearchTerm(string $term): array
+{
+    return $this->createQueryBuilder('r')
+        ->leftJoin('r.reclamation', 'rec')
+        ->leftJoin('rec.user', 'u')
+        ->addSelect('rec', 'u')
+        
+        ->Where('rec.description LIKE :term')
+        ->orWhere('rec.status LIKE :term')
+       
+        ->setParameter('term', '%' . $term . '%')
+        ->orderBy('r.createdAt', 'DESC')
+        ->getQuery()
+        ->getResult();
+}
+    
     //    /**
     //     * @return Response[] Returns an array of Response objects
     //     */

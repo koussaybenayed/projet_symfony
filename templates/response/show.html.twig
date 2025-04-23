@@ -42,7 +42,9 @@
             </tr>
         </tbody>
     </table>
-
+  <a href="{{ path('app_response_pdf', {'id': response.id}) }}" class="btn btn-danger">
+            <i class="fas fa-file-pdf"></i> Export PDF
+        </a>
     <a href="{{ path('app_reclamation_index') }}" class="btn btn-secondary">Back to List</a>
    
 
