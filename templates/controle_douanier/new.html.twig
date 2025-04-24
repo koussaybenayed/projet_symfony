@@ -1,19 +1,170 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}➕ Nouveau contrôle douanier{% endblock %}
+{% block title %}Nouveau contrôle douanier{% endblock %}
 
 {% block body %}
-    <div class="card mb-4" style="background-color: white;">
-        <div class="card-header">
-            <h1 class="h3 mb-0">➕ Créer un nouveau contrôle douanier</h1>
-        </div>
-        
-        {{ include('controle_douanier/_form.html.twig') }}
-        
-        <div class="card-footer">
-            <a href="{{ path('app_controle_douanier_index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-1"></i> ↩️ Retour à la liste
-            </a>
+    <div class="container mt-4">
+        <h1 class="mb-4">🌍 Créer un nouveau contrôle douanier</h1>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate', 'id': 'controle-form'}}) }}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form_label(form.livraison, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                {{ form_widget(form.livraison, {'attr': {'class': 'form-select', 'required': 'required'}}) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.livraison) }}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                {{ form_label(form.pays_douane, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                <div class="input-group">
+                                    {{ form_widget(form.pays_douane, {'attr': {
+                                        'class': 'form-control',
+                                        'required': 'required',
+                                        'id': 'pays-input',
+                                        'list': 'pays-list'
+                                    }}) }}
+                                    <button class="btn btn-outline-secondary" type="button" id="fetch-coordinates">
+                                        <i class="fas fa-map-marker-alt"></i> Localiser
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.pays_douane) }}
+                                </div>
+                                <small class="form-text text-muted">Entrez un pays valide et cliquez sur "Localiser" pour obtenir les coordonnées</small>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        {{ form_label(form.latitude, 'Latitude', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                        {{ form_widget(form.latitude, {'attr': {'class': 'form-control', 'readonly': 'readonly', 'id': 'latitude'}}) }}
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(form.latitude) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        {{ form_label(form.longitude, 'Longitude', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                        {{ form_widget(form.longitude, {'attr': {'class': 'form-control', 'readonly': 'readonly', 'id': 'longitude'}}) }}
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(form.longitude) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form_label(form.statut, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                {{ form_widget(form.statut, {'attr': {'class': 'form-select', 'required': 'required'}}) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.statut) }}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                {{ form_label(form.date_controle, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                {{ form_widget(form.date_controle, {'attr': {'class': 'form-control', 'required': 'required'}}) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.date_controle) }}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                {{ form_label(form.commentaires, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                {{ form_widget(form.commentaires, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.commentaires) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{{ path('app_controle_douanier_index') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
         </div>
     </div>
+    
+    <datalist id="pays-list">
+        {% for pays in ['France', 'Belgique', 'Suisse', 'Allemagne', 'Espagne', 'Italie', 'Royaume-Uni', 'Pays-Bas', 'Luxembourg'] %}
+            <option value="{{ pays }}">
+        {% endfor %}
+    </datalist>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fetchButton = document.getElementById('fetch-coordinates');
+            const paysInput = document.getElementById('pays-input');
+            const latitudeInput = document.getElementById('latitude');
+            const longitudeInput = document.getElementById('longitude');
+            
+            fetchButton.addEventListener('click', function() {
+                const pays = paysInput.value.trim();
+                
+                if (!pays) {
+                    alert('Veuillez entrer un pays avant de localiser');
+                    return;
+                }
+                
+                fetchButton.disabled = true;
+                fetchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Localisation...';
+                
+                // Utiliser une API de géocodage publique au lieu d'un endpoint personnalisé
+                fetch(`https://nominatim.openstreetmap.org/search?country=${encodeURIComponent(pays)}&format=json&limit=1`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur de réseau');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            // Les propriétés de l'API Nominatim sont 'lat' et 'lon'
+                            latitudeInput.value = data[0].lat;
+                            longitudeInput.value = data[0].lon;
+                        } else {
+                            alert('Localisation non trouvée pour ' + pays);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        alert('Erreur lors de la récupération des coordonnées');
+                    })
+                    .finally(() => {
+                        fetchButton.disabled = false;
+                        fetchButton.innerHTML = '<i class="fas fa-map-marker-alt"></i> Localiser';
+                    });
+            });
+            
+            // Validation du formulaire
+            const form = document.getElementById('controle-form');
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        });
+    </script>
 {% endblock %}

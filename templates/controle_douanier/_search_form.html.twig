@@ -1,0 +1,96 @@
+<form method="GET" action="{{ path('app_controle_douanier_index') }}" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="text" 
+                   name="search" 
+                   class="form-control" 
+                   placeholder="Rechercher par pays ou commentaires" 
+                   value="{{ app.request.query.get('search') }}">
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="all" {{ app.request.query.get('status') == 'all' or app.request.query.get('status') is null ? 'selected' : '' }}>
+                Tous les statuts
+            </option>
+            <option value="En attente" {{ app.request.query.get('status') == 'En attente' ? 'selected' : '' }}>
+                En attente
+            </option>
+            <option value="En cours" {{ app.request.query.get('status') == 'En cours' ? 'selected' : '' }}>
+                En cours
+            </option>
+            <option value="Validé" {{ app.request.query.get('status') == 'Validé' ? 'selected' : '' }}>
+                Validé
+            </option>
+            <option value="Rejeté" {{ app.request.query.get('status') == 'Rejeté' ? 'selected' : '' }}>
+                Rejeté
+            </option>
+        </select>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+            <input type="date" 
+                   name="dateFrom" 
+                   class="form-control" 
+                   placeholder="Date de début" 
+                   value="{{ app.request.query.get('dateFrom') }}">
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+            <input type="date" 
+                   name="dateTo" 
+                   class="form-control" 
+                   placeholder="Date de fin" 
+                   value="{{ app.request.query.get('dateTo') }}">
+        </div>
+    </div>
+    
+    <div class="col-md-1">
+        <button type="submit" class="btn btn-primary w-100">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+    
+    {% if app.request.query.has('search') or app.request.query.get('status') != 'all' or app.request.query.has('dateFrom') or app.request.query.has('dateTo') %}
+    <div class="col-md-1">
+        <a href="{{ path('app_controle_douanier_index') }}" class="btn btn-outline-secondary w-100" title="Réinitialiser">
+            <i class="fas fa-times"></i>
+        </a>
+    </div>
+    {% endif %}
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des dates (dateTo ne peut pas être avant dateFrom)
+    const dateFrom = document.querySelector('input[name="dateFrom"]');
+    const dateTo = document.querySelector('input[name="dateTo"]');
+    
+    if (dateFrom && dateTo) {
+        dateFrom.addEventListener('change', function() {
+            if (this.value && dateTo.value && this.value > dateTo.value) {
+                dateTo.value = this.value;
+            }
+            dateTo.min = this.value;
+        });
+        
+        dateTo.addEventListener('change', function() {
+            if (dateFrom.value && this.value && this.value < dateFrom.value) {
+                dateFrom.value = this.value;
+            }
+        });
+        
+        // Initialisation
+        if (dateFrom.value) {
+            dateTo.min = dateFrom.value;
+        }
+    }
+});
+</script>

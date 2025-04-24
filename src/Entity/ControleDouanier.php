@@ -22,7 +22,7 @@ class ControleDouanier
     #[Assert\NotNull(message: "La livraison est obligatoire")]
     private ?Livraison $livraison = null;
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(type: 'string', length: 100, nullable: false)]
     #[Assert\NotBlank(message: "Le pays de douane est obligatoire")]
     #[Assert\Length(
         min: 2,
@@ -32,7 +32,7 @@ class ControleDouanier
     )]
     private ?string $pays_douane = null;
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(type: 'string', length: 20, nullable: false)]
     #[Assert\NotBlank(message: "Le statut est obligatoire")]
     #[Assert\Choice(
         choices: ["En attente", "En cours", "Validé", "Rejeté"],
@@ -52,7 +52,15 @@ class ControleDouanier
     )]
     private ?string $commentaires = null;
 
-    public function getId_controle(): ?int
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $latitude = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $longitude = null;
+
+    // Getters and Setters
+
+    public function getIdControle(): ?int
     {
         return $this->id_controle;
     }
@@ -62,59 +70,10 @@ class ControleDouanier
         return $this->livraison;
     }
 
-    public function setLivraison(?Livraison $livraison): self
+    public function setLivraison(?Livraison $livraison): static
     {
         $this->livraison = $livraison;
         return $this;
-    }
-
-    public function getPays_douane(): ?string
-    {
-        return $this->pays_douane;
-    }
-
-    public function setPays_douane(string $pays_douane): self
-    {
-        $this->pays_douane = $pays_douane;
-        return $this;
-    }
-
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(string $statut): self
-    {
-        $this->statut = $statut;
-        return $this;
-    }
-
-    public function getDate_controle(): ?\DateTimeInterface
-    {
-        return $this->date_controle;
-    }
-
-    public function setDate_controle(\DateTimeInterface $date_controle): self
-    {
-        $this->date_controle = $date_controle;
-        return $this;
-    }
-
-    public function getCommentaires(): ?string
-    {
-        return $this->commentaires;
-    }
-
-    public function setCommentaires(?string $commentaires): self
-    {
-        $this->commentaires = $commentaires;
-        return $this;
-    }
-
-    public function getIdControle(): ?int
-    {
-        return $this->id_controle;
     }
 
     public function getPaysDouane(): ?string
@@ -128,6 +87,17 @@ class ControleDouanier
         return $this;
     }
 
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
+        return $this;
+    }
+
     public function getDateControle(): ?\DateTimeInterface
     {
         return $this->date_controle;
@@ -136,6 +106,39 @@ class ControleDouanier
     public function setDateControle(\DateTimeInterface $date_controle): static
     {
         $this->date_controle = $date_controle;
+        return $this;
+    }
+
+    public function getCommentaires(): ?string
+    {
+        return $this->commentaires;
+    }
+
+    public function setCommentaires(?string $commentaires): static
+    {
+        $this->commentaires = $commentaires;
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): static
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): static
+    {
+        $this->longitude = $longitude;
         return $this;
     }
 }

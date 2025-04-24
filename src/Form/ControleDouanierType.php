@@ -146,6 +146,23 @@ class ControleDouanierType extends AbstractType
                     'min' => (new \DateTime('+1 day'))->format('Y-m-d'),
                 ],
             ])
+            ->add('latitude', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control',
+                    'readonly' => true,
+                    'id' => 'latitude' // Ajoutez cet ID
+                ],
+                'label' => 'Latitude'
+            ])
+            ->add('longitude', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control',
+                    'readonly' => true,
+                    'id' => 'longitude' // Ajoutez cet ID
+                ],
+                'label' => 'Longitude'
+            ])
+            
             ->add('commentaires', TextareaType::class, [
                 'label' => 'Commentaires',
                 'required' => false,

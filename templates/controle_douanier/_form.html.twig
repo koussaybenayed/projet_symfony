@@ -12,7 +12,16 @@
             
             <div class="form-group mb-3">
                 {{ form_label(form.pays_douane, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                {{ form_widget(form.pays_douane, {'attr': {'required': 'required'}}) }}
+                <div class="input-group">
+                    {{ form_widget(form.pays_douane, {'attr': {
+                        'required': 'required',
+                        'id': 'pays-input',
+                        'list': 'pays-list'
+                    }}) }}
+                    <button class="btn btn-outline-secondary" type="button" id="fetch-coordinates">
+                        <i class="fas fa-map-marker-alt"></i> Localiser
+                    </button>
+                </div>
                 <div class="invalid-feedback d-block text-danger" id="error-pays">
                     {{ form_errors(form.pays_douane) }}
                 </div>
@@ -29,6 +38,27 @@
                     <option value="Pays-Bas">
                     <!-- Ajoutez d'autres pays de votre liste ici -->
                 </datalist>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        {{ form_label(form.latitude, 'Latitude', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        {{ form_widget(form.latitude, {'attr': {'class': 'form-control', 'readonly': 'readonly', 'id': 'latitude'}}) }}
+                        <div class="invalid-feedback d-block text-danger" id="error-latitude">
+                            {{ form_errors(form.latitude) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        {{ form_label(form.longitude, 'Longitude', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        {{ form_widget(form.longitude, {'attr': {'class': 'form-control', 'readonly': 'readonly', 'id': 'longitude'}}) }}
+                        <div class="invalid-feedback d-block text-danger" id="error-longitude">
+                            {{ form_errors(form.longitude) }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -281,6 +311,51 @@
         
         // Initialiser le compteur au chargement
         updateCharCount();
+    }
+
+    // Bouton de géolocalisation pour les coordonnées
+    var fetchCoordinatesBtn = document.getElementById('fetch-coordinates');
+    var latitudeInput = document.getElementById('latitude');
+    var longitudeInput = document.getElementById('longitude');
+    
+    if (fetchCoordinatesBtn && paysInput && latitudeInput && longitudeInput) {
+        fetchCoordinatesBtn.addEventListener('click', function() {
+            const pays = paysInput.value.trim();
+            
+            if (!pays) {
+                alert('Veuillez entrer un pays avant de localiser');
+                return;
+            }
+            
+            fetchCoordinatesBtn.disabled = true;
+            var originalBtnContent = fetchCoordinatesBtn.innerHTML;
+            fetchCoordinatesBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Localisation...';
+            
+            // Utiliser l'API publique de Nominatim pour le géocodage
+            fetch(`https://nominatim.openstreetmap.org/search?country=${encodeURIComponent(pays)}&format=json&limit=1`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur de réseau');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.length > 0) {
+                        latitudeInput.value = data[0].lat;
+                        longitudeInput.value = data[0].lon;
+                    } else {
+                        alert('Localisation non trouvée pour ' + pays);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la récupération des coordonnées');
+                })
+                .finally(() => {
+                    fetchCoordinatesBtn.disabled = false;
+                    fetchCoordinatesBtn.innerHTML = originalBtnContent;
+                });
+        });
     }
 
     // Vérification initiale de tous les champs au chargement de la page
