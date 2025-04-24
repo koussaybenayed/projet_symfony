@@ -15,9 +15,6 @@
             <a href="{{ path('app_livraison_weather') }}" class="btn btn-info ms-2">
                 <i class="fas fa-cloud me-1"></i> 🌤️ Météo
             </a>
-            <a href="{{ path('app_livraison_carriers') }}" class="btn btn-secondary ms-2">
-                <i class="fas fa-truck me-1"></i> 🚚 Transporteurs
-            </a>
             <a href="{{ path('app_livraison_export_csv') }}" class="btn btn-success ms-2">
                 <i class="fas fa-file-export me-1"></i> 📊 Exporter CSV
             </a>
@@ -29,7 +26,7 @@
             <form method="GET" action="{{ path('app_livraison_index') }}" class="row g-3">
                 <div class="col-md-6">
                     <div class="input-group search-box">
-                        <input type="text" name="search" class="form-control" placeholder="Rechercher par référence, poids ou coût..." 
+                        <input type="text" name="search" class="form-control" placeholder="Rechercher par référence, transporteur ou statut..." 
                                value="{{ searchTerm ?? '' }}">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-search"></i> 🔍 Rechercher
@@ -39,10 +36,10 @@
                 <div class="col-md-4">
                     <select name="status" class="form-select">
                         <option value="all" {% if selectedStatus is not defined or selectedStatus == 'all' %}selected{% endif %}>Tous les statuts</option>
-                        <option value="pending" {% if selectedStatus == 'En attente' %}selected{% endif %}>En attente</option>
-                        <option value="in_progress" {% if selectedStatus == 'En cours' %}selected{% endif %}>En cours</option>
-                        <option value="delivered" {% if selectedStatus == 'Livré' %}selected{% endif %}>Livré</option>
-                        <option value="cancelled" {% if selectedStatus == 'Annulé' %}selected{% endif %}>Annulé</option>
+                        <option value="en_attente" {% if selectedStatus == 'en_attente' %}selected{% endif %}>En attente</option>
+                        <option value="en_cours" {% if selectedStatus == 'en_cours' %}selected{% endif %}>En cours</option>
+                        <option value="livre" {% if selectedStatus == 'livre' %}selected{% endif %}>Livré</option>
+                        <option value="annule" {% if selectedStatus == 'annule' %}selected{% endif %}>Annulé</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -70,10 +67,11 @@
                     <thead>
                         <tr>
                             <th>🔖 Référence</th>
-                            <th>📅 Date Estimation</th>
+                            <th>🚚 Transporteur</th>
+                            <th>📅 Date Livraison</th>
                             <th>💰 Coût</th>
                             <th>📅 Créé le</th>
-                            <th>⚖️ Poids</th>
+                            <th>⚖️ Poids (kg)</th>
                             <th>🏷️ Statut</th>
                             <th class="text-end">🔧 Actions</th>
                         </tr>
@@ -81,25 +79,33 @@
                     <tbody>
                     {% for livraison in livraisons %}
                         <tr>
-                            <td>📦 Liv-#{{ "%04d"|format(livraison.idLivraisons) }}</td>
-                            <td>{{ livraison.estimatedDelivery ? livraison.estimatedDelivery|date('d/m/Y') : '🕒 N/A' }}</td>
-                            <td>{{ livraison.deliveryCost }} €</td>
-                            <td>{{ livraison.createdAt ? livraison.createdAt|date('d/m/Y') : '🕒 N/A' }}</td>
-                            <td>{{ livraison.poidsColis }} kg</td>
+                            <td>📦 Liv-#{{ "%04d"|format(livraison.id_livraisons) }}</td>
                             <td>
-                                <span class="badge bg-{{ livraison.destinationStatus == 'delivered' ? 'success' : 
-                                    (livraison.destinationStatus == 'pending' ? 'warning' : 
-                                    (livraison.destinationStatus == 'cancelled' ? 'danger' : 'info')) }}">
-                                    {% if livraison.destinationStatus == 'delivered' %}
-                                        ✅ 
-                                    {% elseif livraison.destinationStatus == 'pending' %}
-                                        ⏳ 
-                                    {% elseif livraison.destinationStatus == 'cancelled' %}
-                                        ❌ 
+                                {% if livraison.transporteur %}
+                                    🚛 {{ livraison.transporteur }}
+                                {% else %}
+                                    <span class="text-muted">Non attribué</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ livraison.estimated_delivery ? livraison.estimated_delivery|date('d/m/Y') : '🕒 N/A' }}</td>
+                            <td>{{ livraison.delivery_cost }} €</td>
+                            <td>{{ livraison.created_at ? livraison.created_at|date('d/m/Y') : '🕒 N/A' }}</td>
+                            <td>{{ livraison.poids_colis }}</td>
+                            <td>
+                                <span class="badge bg-{{ livraison.destination_status == 'livre' ? 'success' : 
+                                    (livraison.destination_status == 'en_attente' ? 'warning' : 
+                                    (livraison.destination_status == 'annule' ? 'danger' : 'info')) }}">
+                                    {% if livraison.destination_status == 'livre' %}
+                                        ✅ Livré
+                                    {% elseif livraison.destination_status == 'en_cours' %}
+                                        🚚 En cours
+                                    {% elseif livraison.destination_status == 'en_attente' %}
+                                        ⏳ En attente
+                                    {% elseif livraison.destination_status == 'annule' %}
+                                        ❌ Annulé
                                     {% else %}
-                                        ℹ️ 
+                                        ℹ️ {{ livraison.destination_status|capitalize }}
                                     {% endif %}
-                                    {{ livraison.destinationStatus|capitalize }}
                                 </span>
                             </td>
                             <td class="text-end">
@@ -126,7 +132,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
+                            <td colspan="8" class="text-center text-muted py-4">
                                 <i class="fas fa-info-circle me-2"></i> 
                                 {% if searchTerm or selectedStatus %}
                                     📭 Aucune livraison ne correspond à votre recherche

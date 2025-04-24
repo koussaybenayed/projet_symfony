@@ -41,8 +41,8 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        {{ form_label(form.latitude, 'Latitude', {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                                        {{ form_widget(form.latitude, {'attr': {'class': 'form-control', 'readonly': 'readonly', 'id': 'latitude'}}) }}
+                                       
+                                       
                                         <div class="invalid-feedback">
                                             {{ form_errors(form.latitude) }}
                                         </div>
@@ -50,8 +50,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        {{ form_label(form.longitude, 'Longitude', {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                                        {{ form_widget(form.longitude, {'attr': {'class': 'form-control', 'readonly': 'readonly', 'id': 'longitude'}}) }}
+                                       
                                         <div class="invalid-feedback">
                                             {{ form_errors(form.longitude) }}
                                         </div>
@@ -95,6 +94,12 @@
                             <i class="fas fa-save"></i> Enregistrer
                         </button>
                     </div>
+                    
+                    {# Rendre invisibles les champs originaux pour éviter des conflits #}
+                    <div style="display: none;">
+                        {{ form_widget(form.latitude) }}
+                        {{ form_widget(form.longitude) }}
+                    </div>
                 {{ form_end(form) }}
             </div>
         </div>
@@ -114,8 +119,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             const fetchButton = document.getElementById('fetch-coordinates');
             const paysInput = document.getElementById('pays-input');
-            const latitudeInput = document.getElementById('latitude');
-            const longitudeInput = document.getElementById('longitude');
+            
+            // Utiliser les nouveaux champs personnalisés pour l'affichage
+            const latitudeInput = document.getElementById('controle_douanier_latitude');
+            const longitudeInput = document.getElementById('controle_douanier_longitude');
+            
+            // Champs cachés originaux pour le formulaire Symfony
+            const latitudeHidden = document.querySelector('input[name="controle_douanier[latitude]"]');
+            const longitudeHidden = document.querySelector('input[name="controle_douanier[longitude]"]');
             
             fetchButton.addEventListener('click', function() {
                 const pays = paysInput.value.trim();
@@ -128,7 +139,7 @@
                 fetchButton.disabled = true;
                 fetchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Localisation...';
                 
-                // Utiliser une API de géocodage publique au lieu d'un endpoint personnalisé
+                // Utiliser une API de géocodage
                 fetch(`https://nominatim.openstreetmap.org/search?country=${encodeURIComponent(pays)}&format=json&limit=1`)
                     .then(response => {
                         if (!response.ok) {
@@ -138,9 +149,22 @@
                     })
                     .then(data => {
                         if (data && data.length > 0) {
-                            // Les propriétés de l'API Nominatim sont 'lat' et 'lon'
-                            latitudeInput.value = data[0].lat;
-                            longitudeInput.value = data[0].lon;
+                            const lat = data[0].lat;
+                            const lon = data[0].lon;
+                            
+                            // Mettre à jour les champs visibles
+                            latitudeInput.value = lat;
+                            longitudeInput.value = lon;
+                            
+                            // Synchroniser avec les champs cachés originaux si nécessaire
+                            if (latitudeHidden && latitudeHidden !== latitudeInput) {
+                                latitudeHidden.value = lat;
+                            }
+                            if (longitudeHidden && longitudeHidden !== longitudeInput) {
+                                longitudeHidden.value = lon;
+                            }
+                            
+                            console.log("Coordonnées définies: Lat=" + lat + ", Long=" + lon);
                         } else {
                             alert('Localisation non trouvée pour ' + pays);
                         }
@@ -158,6 +182,14 @@
             // Validation du formulaire
             const form = document.getElementById('controle-form');
             form.addEventListener('submit', function(event) {
+                // Synchroniser les valeurs des champs visibles avec les champs cachés avant soumission
+                if (latitudeHidden && latitudeHidden !== latitudeInput) {
+                    latitudeHidden.value = latitudeInput.value;
+                }
+                if (longitudeHidden && longitudeHidden !== longitudeInput) {
+                    longitudeHidden.value = longitudeInput.value;
+                }
+                
                 if (!form.checkValidity()) {
                     event.preventDefault();
                     event.stopPropagation();

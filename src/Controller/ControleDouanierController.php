@@ -131,7 +131,7 @@ final class ControleDouanierController extends AbstractController
     #[Route('/{id_controle}', name: 'app_controle_douanier_delete', methods: ['POST'])]
     public function delete(Request $request, ControleDouanier $controleDouanier, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$controleDouanier->getId_controle(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$controleDouanier->getIdControle(), $request->request->get('_token'))) {
             $entityManager->remove($controleDouanier);
             $entityManager->flush();
 
