@@ -1,0 +1,88 @@
+{# templates/livraison/qr_code.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}QR Code pour Livraison #{{ livraison.idLivraisons }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800">
+                <i class="fas fa-qrcode me-2"></i> QR Code - Livraison #{{ livraison.idLivraisons }}
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_livraison_index') }}"><i class="fas fa-list me-1"></i> 📋 Livraisons</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_livraison_show', {'id_livraisons': livraison.id_livraisons}) }}">🔍 Détails</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">QR Code</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="btn-group">
+            <a href="{{ path('app_livraison_show', {'id_livraisons': livraison.id_livraisons}) }}" 
+               class="btn btn-primary">
+                <i class="fas fa-arrow-left me-1"></i> Retour aux détails
+            </a>
+            <a href="{{ path('app_livraison_download_qr_code', {'id_livraisons': livraison.id_livraisons}) }}" 
+               class="btn btn-success" download>
+                <i class="fas fa-download me-1"></i> Télécharger
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-primary text-white">
+            <h5 class="m-0 font-weight-bold"><i class="fas fa-qrcode me-2"></i> QR Code de suivi</h5>
+        </div>
+        <div class="card-body text-center">
+            <div class="mb-4">
+                <img src="{{ path('app_livraison_qr_code', {'id_livraisons': livraison.id_livraisons}) }}" 
+                     alt="QR Code pour Livraison #{{ livraison.idLivraisons }}"
+                     class="img-fluid border p-2" style="max-width: 300px;">
+            </div>
+            
+            <div class="mb-4">
+                <h6 class="text-muted">Ce QR code contient les informations de suivi de la livraison</h6>
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light w-25">Numéro de suivi</th>
+                                <td>{{ livraison.getFullTrackingNumber() }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Poids du colis</th>
+                                <td>{{ livraison.poidsColis }} kg</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Statut</th>
+                                <td>
+                                    <span class="badge bg-{{ livraison.destinationStatus == 'delivered' ? 'success' : 
+                                        (livraison.destinationStatus == 'pending' ? 'warning' : 
+                                        (livraison.destinationStatus == 'cancelled' ? 'danger' : 'info')) }}">
+                                        {{ livraison.destinationStatus|capitalize }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Livraison estimée</th>
+                                <td>{{ livraison.estimatedDelivery ? livraison.estimatedDelivery|date('d/m/Y') : 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Transporteur</th>
+                                <td>{{ livraison.transporteur ?: 'N/A' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Scannez ce QR code avec n'importe quelle application de lecture de QR code pour accéder aux informations de suivi de cette livraison.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -239,6 +239,23 @@
                 bsToast.hide();
             }, 5000);
         }
+        
+        <!-- Inclure jQuery avant le script flashy -->
+        <script src="//code.jquery.com/jquery.min.js"></script>
+        
+        <!-- Inclure le fichier JavaScript de Flashy -->
+        <script src="{{ asset('bundles/mercuryseriesflashy/js/flashy.js') }}"></script>
+        
+        <!-- Rendre les notifications Flashy -->
+        {% for label, messages in app.flashes(['flashy_success', 'flashy_info', 'flashy_warning', 'flashy_error']) %}
+            {% for message in messages %}
+                <script>
+                    $(function () {
+                        flashy("{{ message|raw }}", "{{ asset('bundles/mercuryseriesflashy/img/' ~ label|replace({'flashy_': ''}) ~ '.png') }}");
+                    });
+                </script>
+            {% endfor %}
+        {% endfor %}
 
         // Check for flash messages and show appropriate toasts
         document.addEventListener('DOMContentLoaded', function() {

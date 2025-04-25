@@ -11,11 +11,6 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 #[Route('/controle/douanier')]
 final class ControleDouanierController extends AbstractController
@@ -28,16 +23,16 @@ final class ControleDouanierController extends AbstractController
         $status = $request->query->get('status');
         $dateFrom = null;
         $dateTo = null;
-        
+
         // Conversion des dates si présentes
         if ($request->query->has('dateFrom') && !empty($request->query->get('dateFrom'))) {
             $dateFrom = new \DateTime($request->query->get('dateFrom'));
         }
-        
+
         if ($request->query->has('dateTo') && !empty($request->query->get('dateTo'))) {
             $dateTo = new \DateTime($request->query->get('dateTo'));
         }
-        
+
         // Effectuer la recherche si des critères sont spécifiés
         if ($searchTerm || ($status !== null && $status !== 'all') || $dateFrom || $dateTo) {
             $controleDouaniers = $controleDouanierRepository->findBySearchCriteria($searchTerm, $status, $dateFrom, $dateTo);
@@ -48,13 +43,14 @@ final class ControleDouanierController extends AbstractController
         } else {
             $controleDouaniers = $controleDouanierRepository->findAll();
         }
-        
+
         // Statistiques pour le graphique
         $statistics = $this->getStatistics($controleDouaniers);
-        
+
         // Vérification des contrôles en attente
         $pendingAlerts = $this->checkPendingControls($controleDouaniers);
-        
+        $pendingControlsCount = count($pendingAlerts); // Ajout de cette ligne
+
         return $this->render('controle_douanier/index.html.twig', [
             'controle_douaniers' => $controleDouaniers,
             'searchTerm' => $searchTerm,
@@ -63,6 +59,7 @@ final class ControleDouanierController extends AbstractController
             'dateTo' => $dateTo ? $dateTo->format('Y-m-d') : null,
             'statistics' => $statistics,
             'pendingAlerts' => $pendingAlerts,
+            'pendingControlsCount' => $pendingControlsCount, // Ajout de la variable ici
         ]);
     }
 
@@ -77,7 +74,7 @@ final class ControleDouanierController extends AbstractController
             // Récupération des coordonnées géographiques
             $country = $controleDouanier->getPaysDouane();
             $coordinates = $this->fetchCoordinates($country);
-            
+
             if ($coordinates) {
                 $controleDouanier->setLatitude($coordinates['latitude']);
                 $controleDouanier->setLongitude($coordinates['longitude']);
@@ -116,7 +113,7 @@ final class ControleDouanierController extends AbstractController
             $controleDouanier->getIdControle(),
             $controleDouanier->getStatut()
         ));
-        
+
         return $this->render('controle_douanier/show.html.twig', [
             'controle_douanier' => $controleDouanier,
         ]);
@@ -180,7 +177,7 @@ final class ControleDouanierController extends AbstractController
     private function fetchCoordinates(string $country): ?array
     {
         $client = HttpClient::create();
-        $url = sprintf('https://geocoding-api.open-meteo.com/v1/search?name=%s&count=1&language=fr&format=json', 
+        $url = sprintf('https://geocoding-api.open-meteo.com/v1/search?name=%s&count=1&language=fr&format=json',
             urlencode($country));
 
         try {
@@ -221,7 +218,7 @@ final class ControleDouanierController extends AbstractController
 
         return $statistics;
     }
-    
+
     /**
      * Vérifie les contrôles en attente pour aujourd'hui et demain
      */
@@ -232,18 +229,11 @@ final class ControleDouanierController extends AbstractController
         $alerts = [];
 
         foreach ($controleDouaniers as $controle) {
-            if ($controle->getStatut() === 'En attente' && 
-                ($controle->getDateControle()->format('Y-m-d') === $today->format('Y-m-d') || 
+            if ($controle->getStatut() === 'En attente' &&
+                ($controle->getDateControle()->format('Y-m-d') === $today->format('Y-m-d') ||
                  $controle->getDateControle()->format('Y-m-d') === $tomorrow->format('Y-m-d'))) {
                 $alerts[] = $controle;
             }
-        }
-
-        if (!empty($alerts)) {
-            $this->addFlash('warning', sprintf(
-                '%d contrôle(s) en attente pour aujourd\'hui ou demain',
-                count($alerts)
-            ));
         }
 
         return $alerts;
