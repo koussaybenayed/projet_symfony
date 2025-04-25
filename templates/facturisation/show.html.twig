@@ -1,0 +1,55 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Votre facture{% endblock %}
+
+{% block body %}
+    <div class="container mt-5 mb-5">
+        <div class="border p-4 shadow rounded" style="background-color: #fff;">
+            <div class="text-center mb-4">
+                <h1 class="text-danger font-weight-bold">🧾 Votre facture</h1>
+                <p class="text-muted">Merci pour votre confiance</p>
+            </div>
+
+            <div class="d-flex justify-content-between mb-4">
+                <div>
+                    <h5 class="font-weight-bold">Client :</h5>
+                    <p>{{ facturisation.user.userEmail ?? 'Client inconnu' }}</p>
+                </div>
+                <div class="text-right">
+                    <h5 class="font-weight-bold">Date :</h5>
+                    <p>{{ facturisation.paymentDate ? facturisation.paymentDate|date('Y-m-d H:i') : '—' }}</p>
+                </div>
+            </div>
+
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Méthode de Paiement</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ facturisation.paymentMethod }}</td>
+                        <td>{{ facturisation.amount }} €</td>
+                        <td>{{ facturisation.status }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="text-center mt-5">
+                <p class="font-italic text-muted">
+                    🙏 Merci d'avoir choisi <strong>Navifly</strong>.<br>
+                    Nous sommes ravis de vous compter parmi nos clients. Si vous avez la moindre question ou besoin d’assistance, notre équipe reste à votre disposition.
+                </p>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{{ path('app_facturisation_front_index') }}" class="btn btn-success btn-lg">
+                    🔙 Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

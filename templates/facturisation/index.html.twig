@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste Des Factures{% endblock %}
+
+{% block body %}
+    <div style="text-align:center; margin-bottom: 20px;">
+        <h1 style="color: #ff5733; font-size: 30px;">
+            <i class="fas fa-file-invoice" style="font-size: 30px; vertical-align: middle; margin-right: 10px;"></i>
+           Liste Des Factures
+        </h1>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; margin-bottom: 20px;">
+        <thead>
+            <tr style="background-color: #f9f9f9;">
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">
+                    👤 Client
+                </th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">
+                    💳 Méthode de paiement
+                </th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">
+                    💵 Montant
+                </th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">
+                    📅 Date de paiement
+                </th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">
+                    ✅ Statut
+                </th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: black;">
+                    ⚙️ Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for facturisation in pagination %}
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.user.userEmail ?? 'N/A' }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.paymentMethod }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.amount }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.paymentDate ? facturisation.paymentDate|date('Y-m-d H:i') : 'N/A' }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ facturisation.status }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">
+                    {% if facturisation.status|lower == 'confirmé' %}
+                        <a href="{{ path('app_facturisation_show', {'id': facturisation.id}) }}" 
+                           style="color: white; background-color: green; padding: 8px 12px; text-decoration: none; border-radius: 5px; margin-right: 5px; display: inline-block;">
+                            👁️ Afficher
+                        </a>
+                    {% else %}
+                        <button 
+                            style="background-color: gray; color: white; padding: 8px 12px; border: none; border-radius: 5px; margin-right: 5px;"
+                            onclick="alert('Votre facture est en cours de traitement. Veuillez patienter.')">
+                            ⏳ Afficher
+                        </button>
+                    {% endif %}
+
+                    <a href="{{ path('app_facturisation_edit', {'id': facturisation.id}) }}" 
+                       style="color: white; background-color: blue; padding: 8px 12px; text-decoration: none; border-radius: 5px; margin-right: 5px; display: inline-block;">
+                        ✏️ Modifier
+                    </a>
+                    <form method="post" action="{{ path('app_facturisation_delete', {'id': facturisation.id}) }}" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ facturisation.id) }}">
+                        <button type="submit" style="background-color: red; color: white; padding: 8px 12px; border: none; border-radius: 5px;">
+                            🗑️ Supprimer
+                        </button>
+                    </form>
+
+                    <a href="{{ path('app_facturisation_pdf', {'id': facturisation.id}) }}" 
+                       style="color: white; background-color: orange; padding: 8px 12px; text-decoration: none; border-radius: 5px; margin-left: 5px; display: inline-block;">
+                        📄 Télécharger PDF
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; border: 1px solid #ddd; padding: 12px;">Aucun enregistrement trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if pagination|length > 0 %}
+        {{ knp_pagination_render(pagination) }}
+    {% endif %}
+
+    <div style="text-align:center;">
+        <a href="{{ path('app_facturisation_new') }}" 
+           style="color: white; background-color: green; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            ➕ Créer une nouvelle
+        </a>
+    </div>
+{% endblock %}

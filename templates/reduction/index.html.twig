@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion de Réduction{% endblock %}
+
+{% block body %}
+    <h1 style="color: red;">Gestion de Réduction</h1>
+
+    <form method="get" action="{{ path('app_reduction_index') }}" style="margin-bottom: 20px;">
+        <div class="input-group">
+            <input type="text" name="search" placeholder="Rechercher par code..." 
+                   class="form-control" value="{{ app.request.query.get('search') }}">
+            <button type="submit" class="btn btn-primary">🔍 Rechercher</button>
+        </div>
+    </form>
+
+    <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr style="background-color: #f2f2f2; text-align: left;">
+                <th style="border: 1px solid #ddd; padding: 12px; color: green;">🔑 Code</th>
+                <th style="border: 1px solid #ddd; padding: 12px; color: green;">💸 Montant de réduction</th>
+                <th style="border: 1px solid #ddd; padding: 12px; color: green;">⏳ Date d'expiration</th>
+                <th style="border: 1px solid #ddd; padding: 12px; color: green;">📝 Texte de condition</th>
+                <th style="border: 1px solid #ddd; padding: 12px; color: green;">📅 Date de création</th>
+                <th style="border: 1px solid #ddd; padding: 12px; color: green;">⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reduction in reductions %}
+            <tr style="background-color: #ffffff;">
+                <td style="border: 1px solid #ddd; padding: 10px;">{{ reduction.code }}</td>
+                <td style="border: 1px solid #ddd; padding: 10px;">{{ reduction.discountAmount }}</td>
+                <td style="border: 1px solid #ddd; padding: 10px;">{{ reduction.expirationDate ? reduction.expirationDate|date('Y-m-d H:i') : '' }}</td>
+                <td style="border: 1px solid #ddd; padding: 10px;">{{ reduction.conditionText }}</td>
+                <td style="border: 1px solid #ddd; padding: 10px;">{{ reduction.createdAt ? reduction.createdAt|date('Y-m-d H:i') : '' }}</td>
+                <td style="border: 1px solid #ddd; padding: 10px;">
+                    <a href="{{ path('app_reduction_show', {'id': reduction.id}) }}" 
+                       style="background-color: green; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; margin-right: 5px;">👁️ Afficher</a>
+                    <a href="{{ path('app_reduction_edit', {'id': reduction.id}) }}" 
+                       style="background-color: blue; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; margin-right: 5px;">✏️ Modifier</a>
+                    <a href="{{ path('send_sms', {'id': reduction.id}) }}" 
+                       style="background-color: orange; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px;">📩 Envoyer SMS</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; border: 1px solid #ddd; padding: 12px;">Aucun enregistrement trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_reduction_new') }}" 
+       style="background-color: green; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; margin-top: 20px; display: inline-block;">➕ Ajouter une réduction</a>
+{% endblock %}
