@@ -260,6 +260,9 @@
         });
     </script>
 
-    {% block javascripts %}{% endblock %}
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+        <!-- Vous pouvez ajouter d'autres scripts spécifiques à la page ici -->
+    {% endblock %}
 </body>
 </html>

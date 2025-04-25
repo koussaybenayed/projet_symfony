@@ -39,8 +39,12 @@ final class ControleDouanierController extends AbstractController
         }
         
         // Effectuer la recherche si des critères sont spécifiés
-        if ($searchTerm || $status !== null && $status !== 'all' || $dateFrom || $dateTo) {
+        if ($searchTerm || ($status !== null && $status !== 'all') || $dateFrom || $dateTo) {
             $controleDouaniers = $controleDouanierRepository->findBySearchCriteria($searchTerm, $status, $dateFrom, $dateTo);
+            $this->addFlash('info', sprintf(
+                '%d contrôles trouvés avec vos critères de recherche',
+                count($controleDouaniers)
+            ));
         } else {
             $controleDouaniers = $controleDouanierRepository->findAll();
         }
@@ -77,12 +81,24 @@ final class ControleDouanierController extends AbstractController
             if ($coordinates) {
                 $controleDouanier->setLatitude($coordinates['latitude']);
                 $controleDouanier->setLongitude($coordinates['longitude']);
+                $this->addFlash('success', sprintf(
+                    'Coordonnées GPS de %s récupérées avec succès (Lat: %s, Long: %s)',
+                    $country,
+                    $coordinates['latitude'],
+                    $coordinates['longitude']
+                ));
+            } else {
+                $this->addFlash('warning', 'Impossible de récupérer les coordonnées GPS pour ce pays');
             }
 
             $entityManager->persist($controleDouanier);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Contrôle douanier créé avec succès');
+            $this->addFlash('success', sprintf(
+                'Contrôle douanier #%d pour %s créé avec succès',
+                $controleDouanier->getIdControle(),
+                $controleDouanier->getPaysDouane()
+            ));
             return $this->redirectToRoute('app_controle_douanier_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -95,6 +111,12 @@ final class ControleDouanierController extends AbstractController
     #[Route('/{id_controle}', name: 'app_controle_douanier_show', methods: ['GET'])]
     public function show(ControleDouanier $controleDouanier): Response
     {
+        $this->addFlash('info', sprintf(
+            'Consultation du contrôle douanier #%d - Statut: %s',
+            $controleDouanier->getIdControle(),
+            $controleDouanier->getStatut()
+        ));
+        
         return $this->render('controle_douanier/show.html.twig', [
             'controle_douanier' => $controleDouanier,
         ]);
@@ -113,12 +135,17 @@ final class ControleDouanierController extends AbstractController
                 if ($coordinates) {
                     $controleDouanier->setLatitude($coordinates['latitude']);
                     $controleDouanier->setLongitude($coordinates['longitude']);
+                    $this->addFlash('success', 'Coordonnées GPS mises à jour');
                 }
             }
 
             $entityManager->flush();
 
-            $this->addFlash('success', 'Contrôle douanier modifié avec succès');
+            $this->addFlash('success', sprintf(
+                'Contrôle douanier #%d pour %s modifié avec succès',
+                $controleDouanier->getIdControle(),
+                $controleDouanier->getPaysDouane()
+            ));
             return $this->redirectToRoute('app_controle_douanier_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -135,7 +162,13 @@ final class ControleDouanierController extends AbstractController
             $entityManager->remove($controleDouanier);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Contrôle douanier supprimé avec succès');
+            $this->addFlash('success', sprintf(
+                'Contrôle douanier #%d pour %s supprimé avec succès',
+                $controleDouanier->getIdControle(),
+                $controleDouanier->getPaysDouane()
+            ));
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide, suppression annulée');
         }
 
         return $this->redirectToRoute('app_controle_douanier_index', [], Response::HTTP_SEE_OTHER);
@@ -161,8 +194,7 @@ final class ControleDouanierController extends AbstractController
                 ];
             }
         } catch (\Exception $e) {
-            // Log l'erreur si nécessaire
-            // $this->logger->error('Erreur lors de la récupération des coordonnées: '.$e->getMessage());
+            $this->addFlash('warning', 'Erreur lors de la récupération des coordonnées GPS');
         }
 
         return null;
@@ -189,7 +221,7 @@ final class ControleDouanierController extends AbstractController
 
         return $statistics;
     }
-
+    
     /**
      * Vérifie les contrôles en attente pour aujourd'hui et demain
      */
@@ -205,6 +237,13 @@ final class ControleDouanierController extends AbstractController
                  $controle->getDateControle()->format('Y-m-d') === $tomorrow->format('Y-m-d'))) {
                 $alerts[] = $controle;
             }
+        }
+
+        if (!empty($alerts)) {
+            $this->addFlash('warning', sprintf(
+                '%d contrôle(s) en attente pour aujourd\'hui ou demain',
+                count($alerts)
+            ));
         }
 
         return $alerts;
