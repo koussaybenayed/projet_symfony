@@ -27,6 +27,7 @@ class ReclamationType extends AbstractType
                     'rows' => 5,
                     'class' => 'form-control',
                     'placeholder' => 'Enter description here...'
+                     
                 ],
                 'constraints' => [
                     new NotBlank([
@@ -34,7 +35,7 @@ class ReclamationType extends AbstractType
                     ]),
                     new Length([
                         'min' => 3,
-                        'max' => 20,
+                        'max' => 5000,
                         'minMessage' => 'Description must be at least {{ limit }} characters',
                         'maxMessage' => 'Description cannot exceed {{ limit }} characters'
                     ])
@@ -72,7 +73,7 @@ class ReclamationType extends AbstractType
                     ]),
                     new Length([
                         'min' => 3,
-                        'max' => 500,
+                        'max' => 5000,
                         'minMessage' => 'Status must be at least {{ limit }} characters',
                         'maxMessage' => 'Status cannot exceed {{ limit }} characters'
                     ])
