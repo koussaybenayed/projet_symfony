@@ -1,10 +1,12 @@
 <?php
 
+// src/Controller/LivraisonController.php
 namespace App\Controller;
 
 use App\Entity\Livraison;
 use App\Form\LivraisonType;
 use App\Repository\LivraisonRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,19 +30,38 @@ class LivraisonController extends AbstractController
     }
 
     #[Route('/', name: 'app_livraison_index', methods: ['GET'])]
-    public function index(Request $request, LivraisonRepository $livraisonRepository): Response
-    {
+    public function index(
+        Request $request,
+        LivraisonRepository $livraisonRepository,
+        PaginatorInterface $paginator
+    ): Response {
         $searchTerm = $request->query->get('search');
-        $status = $request->query->get('status');
-                
-        if ($searchTerm || $status) {
-            $livraisons = $livraisonRepository->findBySearchCriteria($searchTerm, $status);
-        } else {
-            $livraisons = $livraisonRepository->findAll();
+        $status = $request->query->get('status', 'all');
+        
+        $queryBuilder = $livraisonRepository->createQueryBuilder('l')
+            ->orderBy('l.created_at', 'DESC');
+
+        if ($status !== 'all') {
+            $queryBuilder->andWhere('l.destination_status = :status')
+                ->setParameter('status', $status);
         }
-                
+
+        if ($searchTerm) {
+            $queryBuilder->andWhere('
+                l.transporteur LIKE :search OR 
+                l.destination_status LIKE :search OR 
+                l.id_livraisons LIKE :search
+            ')->setParameter('search', '%'.$searchTerm.'%');
+        }
+
+        $pagination = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1),
+            10
+        );
+
         return $this->render('livraison/index.html.twig', [
-            'livraisons' => $livraisons,
+            'pagination' => $pagination,
             'searchTerm' => $searchTerm,
             'selectedStatus' => $status
         ]);
@@ -90,8 +111,11 @@ class LivraisonController extends AbstractController
     }
 
     #[Route('/{id_livraisons}/edit', name: 'app_livraison_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Livraison $livraison, EntityManagerInterface $entityManager): Response
-    {
+    public function edit(
+        Request $request, 
+        Livraison $livraison, 
+        EntityManagerInterface $entityManager
+    ): Response {
         $form = $this->createForm(LivraisonType::class, $livraison);
         $form->handleRequest($request);
                 
@@ -109,8 +133,11 @@ class LivraisonController extends AbstractController
     }
 
     #[Route('/{id_livraisons}', name: 'app_livraison_delete', methods: ['POST'])]
-    public function delete(Request $request, Livraison $livraison, EntityManagerInterface $entityManager): Response
-    {
+    public function delete(
+        Request $request, 
+        Livraison $livraison, 
+        EntityManagerInterface $entityManager
+    ): Response {
         if ($this->isCsrfTokenValid('delete'.$livraison->getId_livraisons(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($livraison);
             $entityManager->flush();
@@ -120,8 +147,6 @@ class LivraisonController extends AbstractController
                 
         return $this->redirectToRoute('app_livraison_index', [], Response::HTTP_SEE_OTHER);
     }
-    
-    // Routes API
     
     #[Route('/api/weather', name: 'app_livraison_fetch_weather', methods: ['POST'])]
     public function fetchWeather(Request $request): JsonResponse

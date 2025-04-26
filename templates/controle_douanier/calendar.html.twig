@@ -1,0 +1,76 @@
+{# templates/controle_douanier/calendar.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier des Contrôles Douaniers{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.3/main.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.11.3/main.min.css">
+    <style>
+        #calendar {
+            max-width: 1100px;
+            margin: 0 auto;
+            height: 700px;
+        }
+        .fc-event {
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="h4 mb-0">Calendrier des Contrôles Douaniers</h2>
+            <a href="{{ path('app_controle_douanier_index') }}" class="btn btn-light btn-sm">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+        <div class="card-body">
+            <div id="calendar" data-events="{{ calendarEvents|json_encode|e('html_attr') }}"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.3/locales/fr.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: [FullCalendar.dayGridPlugin, FullCalendar.interactionPlugin],
+                initialView: 'dayGridMonth',
+                locale: 'fr',
+                firstDay: 1,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                },
+                events: JSON.parse(calendarEl.dataset.events),
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        window.location.href = info.event.url;
+                    }
+                },
+                eventContent: function(arg) {
+                    return {
+                        html: `<div class="fc-event-main-frame">
+                            <div class="fc-event-title-container">
+                                <div class="fc-event-title">${arg.event.title}</div>
+                            </div>
+                        </div>`
+                    };
+                }
+            });
+            calendar.render();
+        });
+    </script>
+{% endblock %}

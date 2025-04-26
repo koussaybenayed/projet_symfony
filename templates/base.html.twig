@@ -33,6 +33,7 @@
     <script src="{{ asset('assets/js/config.js') }}"></script>
 
     {% block stylesheets %}{% endblock %}
+            {{ encore_entry_link_tags('app') }}
 </head>
 
 <body>
@@ -278,6 +279,7 @@
     </script>
 
     {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
         {{ encore_entry_script_tags('app') }}
         <!-- Vous pouvez ajouter d'autres scripts spécifiques à la page ici -->
     {% endblock %}
