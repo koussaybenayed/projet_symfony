@@ -38,6 +38,13 @@
                 </tbody>
             </table>
 
+            {# ➡️ BOUTON PAYER simple ajouté ici #}
+            <div class="text-center mt-4">
+                <a href="{{ path('app_facturisation_pay', {'id': facturisation.id}) }}" class="btn btn-primary btn-lg">
+                    💳 Payer
+                </a>
+            </div>
+
             <div class="text-center mt-5">
                 <p class="font-italic text-muted">
                     🙏 Merci d'avoir choisi <strong>Navifly</strong>.<br>

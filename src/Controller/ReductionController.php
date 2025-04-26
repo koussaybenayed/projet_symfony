@@ -110,8 +110,11 @@ final class ReductionController extends AbstractController
         }
 
         // Envoyer un SMS avec les détails de la réduction
-        $this->twilioService->sendSms('+21693596423', "Bonjour cher client,\n\nNous sommes ravis de vous informer que vous avez reçu un code de réduction sur votre billet. Cette offre est notre façon de vous remercier d'avoir choisi NaviFly pour vos voyages. Nous apprécions votre confiance et espérons que vous profiterez pleinement de nos services.\n\nMerci encore et bon vol avec NaviFly !\n\nVotre code de réduction est : " . $reduction->getCode());
-
+        $this->twilioService->sendSms(
+            '+21693596423',
+            "Bonjour cher client,\n\nVotre paiement a été effectué avec succès. Nous apprécions votre confiance et espérons que vous profiterez pleinement de nos services.\n\nMerci encore pour votre choix de NaviFly !"
+        );
+        
         return new Response('SMS envoyé pour la réduction : ' . $reduction->getCode());
     }
 }
