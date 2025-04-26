@@ -8,6 +8,7 @@ use App\Repository\ControleDouanierRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -44,15 +45,60 @@ class ControleDouanierController extends AbstractController
         ]);
     }
 
-    #[Route('/calendar', name: 'app_controle_douanier_calendar', methods: ['GET'])]
-    public function calendar(ControleDouanierRepository $controleDouanierRepository): Response
+    #[Route('/calendrier', name: 'app_controle_douanier_calendar', methods: ['GET'])]
+    public function calendar(ControleDouanierRepository $repository): Response
     {
-        $controleDouaniers = $controleDouanierRepository->findAll();
-        $calendarEvents = $this->prepareCalendarEvents($controleDouaniers);
-
+        $countControles = count($repository->findBySearchCriteria(null, 'En attente', null, null));
+        
         return $this->render('controle_douanier/calendar.html.twig', [
-            'calendarEvents' => $calendarEvents,
+            'countControles' => $countControles
         ]);
+    }
+
+    #[Route('/api/calendar/events', name: 'app_calendar_events', methods: ['GET'])]
+    public function getCalendarEvents(Request $request, ControleDouanierRepository $repository): JsonResponse
+    {
+        try {
+            $start = new \DateTime($request->query->get('start', 'first day of this month'));
+            $end = new \DateTime($request->query->get('end', 'last day of this month'));
+            $status = $request->query->get('status', 'En attente');
+        } catch (\Exception $e) {
+            $start = new \DateTime('first day of this month');
+            $end = new \DateTime('last day of this month');
+            $status = 'En attente';
+        }
+
+        // Récupérer seulement les contrôles "En attente"
+        $controles = $repository->findBetweenDatesByStatus($start, $end, $status);
+        
+        $events = [];
+        foreach ($controles as $controle) {
+            if (!$controle->getDateControle()) {
+                continue;
+            }
+
+            $dateControle = clone $controle->getDateControle();
+            $endDate = clone $dateControle;
+            $endDate->modify('+1 day');
+
+            $events[] = [
+                'id' => $controle->getIdControle(),
+                'title' => sprintf('Contrôle #%d - %s', $controle->getIdControle(), $controle->getPaysDouane()),
+                'start' => $dateControle->format('Y-m-d'),
+                'end' => $endDate->format('Y-m-d'),
+                'color' => $this->getStatusColor($controle->getStatut()),
+                'textColor' => '#ffffff',
+                'allDay' => true,
+                'url' => $this->generateUrl('app_controle_douanier_show', ['id_controle' => $controle->getIdControle()]),
+                'extendedProps' => [
+                    'status' => $controle->getStatut(),
+                    'country' => $controle->getPaysDouane(),
+                    'comments' => $controle->getCommentaires() ?? 'Aucun commentaire'
+                ]
+            ];
+        }
+
+        return $this->json($events);
     }
 
     #[Route('/new', name: 'app_controle_douanier_new', methods: ['GET', 'POST'])]
@@ -154,7 +200,7 @@ class ControleDouanierController extends AbstractController
                 ];
             }
         } catch (\Exception $e) {
-            $this->addFlash('warning', 'Erreur lors de la récupération des coordonnées GPS');
+            $this->addFlash('warning', 'Erreur lors de la récupération des coordonnées GPS: '.$e->getMessage());
         }
 
         return null;
@@ -187,6 +233,7 @@ class ControleDouanierController extends AbstractController
 
         foreach ($controleDouaniers as $controle) {
             if ($controle->getStatut() === 'En attente' &&
+                $controle->getDateControle() &&
                 ($controle->getDateControle()->format('Y-m-d') === $today->format('Y-m-d') ||
                  $controle->getDateControle()->format('Y-m-d') === $tomorrow->format('Y-m-d'))) {
                 $alerts[] = $controle;
@@ -196,38 +243,14 @@ class ControleDouanierController extends AbstractController
         return $alerts;
     }
 
-    private function prepareCalendarEvents(array $controleDouaniers): array
-    {
-        $events = [];
-
-        foreach ($controleDouaniers as $controle) {
-            $events[] = [
-                'id' => $controle->getIdControle(),
-                'title' => sprintf('Contrôle #%d - %s', $controle->getIdControle(), $controle->getPaysDouane()),
-                'start' => $controle->getDateControle()->format('Y-m-d'),
-                'end' => $controle->getDateControle()->modify('+1 day')->format('Y-m-d'),
-                'color' => $this->getStatusColor($controle->getStatut()),
-                'textColor' => '#ffffff',
-                'url' => $this->generateUrl('app_controle_douanier_show', ['id_controle' => $controle->getIdControle()]),
-                'extendedProps' => [
-                    'status' => $controle->getStatut(),
-                    'country' => $controle->getPaysDouane(),
-                    'commentaires' => $controle->getCommentaires() ?? 'Aucun commentaire'
-                ]
-            ];
-        }
-
-        return $events;
-    }
-
     private function getStatusColor(string $status): string
     {
         return match ($status) {
-            'En attente' => '#ffc107',
-            'En cours' => '#17a2b8',
-            'Validé' => '#28a745',
-            'Rejeté' => '#dc3545',
-            default => '#6c757d',
+            'En attente' => '#ffc107', // Jaune
+            'En cours' => '#17a2b8',   // Bleu
+            'Validé' => '#28a745',     // Vert
+            'Rejeté' => '#dc3545',     // Rouge
+            default => '#6c757d'       // Gris
         };
     }
 }

@@ -1,75 +1,120 @@
-{# templates/controle_douanier/calendar.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Calendrier des Contrôles Douaniers{% endblock %}
+{% block title %}Calendrier des contrôles douaniers{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.3/main.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.11.3/main.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css">
     <style>
-        #calendar {
-            max-width: 1100px;
-            margin: 0 auto;
-            height: 700px;
-        }
         .fc-event {
             cursor: pointer;
+        }
+        .fc-event-title {
+            font-weight: bold;
+        }
+        .fc-toolbar-title {
+            font-size: 1.5rem !important;
+        }
+        .modal-event-details {
+            padding: 15px;
         }
     </style>
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid mt-4">
-    <div class="card">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="h4 mb-0">Calendrier des Contrôles Douaniers</h2>
-            <a href="{{ path('app_controle_douanier_index') }}" class="btn btn-light btn-sm">
-                <i class="fas fa-arrow-left"></i> Retour à la liste
-            </a>
+    <div class="container-fluid">
+        <h1 class="my-4">Calendrier des contrôles douaniers</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-clock"></i> Contrôles en attente
+                        <span class="badge bg-light text-dark">{{ countControles }}</span>
+                    </span>
+                    <div>
+                        <a href="{{ path('app_controle_douanier_index') }}" class="btn btn-light btn-sm">
+                            <i class="fas fa-list"></i> Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
         </div>
-        <div class="card-body">
-            <div id="calendar" data-events="{{ calendarEvents|json_encode|e('html_attr') }}"></div>
+        
+        <!-- Modal pour afficher les détails d'un événement -->
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventTitle" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="eventTitle">Détails du contrôle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-event-details">
+                            <p><strong>Statut:</strong> <span id="eventStatus"></span></p>
+                            <p><strong>Pays:</strong> <span id="eventCountry"></span></p>
+                            <p><strong>Commentaires:</strong> <span id="eventComments"></span></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" id="eventViewLink" class="btn btn-primary">Voir les détails</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.3/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.11.3/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@5.11.3/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.3/locales/fr.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales-all.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: [FullCalendar.dayGridPlugin, FullCalendar.interactionPlugin],
+            var calendarEl = document.getElementById('calendar');
+            
+            var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'fr',
-                firstDay: 1,
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: JSON.parse(calendarEl.dataset.events),
+                events: '{{ path('app_calendar_events') }}',
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                },
                 eventClick: function(info) {
-                    if (info.event.url) {
-                        window.location.href = info.event.url;
-                    }
+                    // Empêcher la navigation par défaut
+                    info.jsEvent.preventDefault();
+                    
+                    // Remplir le modal avec les informations de l'événement
+                    document.getElementById('eventTitle').textContent = info.event.title;
+                    document.getElementById('eventStatus').textContent = info.event.extendedProps.status;
+                    document.getElementById('eventCountry').textContent = info.event.extendedProps.country;
+                    document.getElementById('eventComments').textContent = info.event.extendedProps.comments;
+                    document.getElementById('eventViewLink').href = info.event.url;
+                    
+                    // Afficher le modal
+                    var eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+                    eventModal.show();
                 },
-                eventContent: function(arg) {
-                    return {
-                        html: `<div class="fc-event-main-frame">
-                            <div class="fc-event-title-container">
-                                <div class="fc-event-title">${arg.event.title}</div>
-                            </div>
-                        </div>`
-                    };
-                }
+                dayMaxEvents: true,
+                timeZone: 'local',
+                businessHours: true,
+                navLinks: true,
+                editable: false,
+                selectable: true,
+                nowIndicator: true
             });
+            
             calendar.render();
         });
     </script>

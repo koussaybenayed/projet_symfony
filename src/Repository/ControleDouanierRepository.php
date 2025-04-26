@@ -1,4 +1,5 @@
-<?php
+<?php 
+
 namespace App\Repository;
 
 use App\Entity\ControleDouanier;
@@ -7,13 +8,12 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
 
-class ControleDouanierRepository extends ServiceEntityRepository
-{
+class ControleDouanierRepository extends ServiceEntityRepository {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ControleDouanier::class);
     }
-
+    
     public function findBySearchCriteria(
         ?string $searchTerm = null,
         ?string $status = null,
@@ -24,7 +24,7 @@ class ControleDouanierRepository extends ServiceEntityRepository
         
         return $qb->getQuery()->getResult();
     }
-
+    
     private function createSearchQueryBuilder(
         ?string $searchTerm = null,
         ?string $status = null,
@@ -35,26 +35,23 @@ class ControleDouanierRepository extends ServiceEntityRepository
             ->leftJoin('c.livraison', 'l')
             ->addSelect('l')  // Précharge les données de livraison
             ->orderBy('c.date_controle', 'DESC');
-
+        
         $this->applySearchTerm($qb, $searchTerm);
         $this->applyStatusFilter($qb, $status);
         $this->applyDateFilters($qb, $dateFrom, $dateTo);
-
+        
         return $qb;
     }
-    // src/Repository/ControleDouanierRepository.php
-
-
-public function findAllPays(): array
-{
-    return $this->createQueryBuilder('c')
-        ->select('DISTINCT c.pays_douane')
-        ->where('c.pays_douane IS NOT NULL')
-        ->orderBy('c.pays_douane', 'ASC')
-        ->getQuery()
-        ->getSingleColumnResult();
-}
-
+    
+    public function findAllPays(): array {
+        return $this->createQueryBuilder('c')
+            ->select('DISTINCT c.pays_douane')
+            ->where('c.pays_douane IS NOT NULL')
+            ->orderBy('c.pays_douane', 'ASC')
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
+    
     private function applySearchTerm(QueryBuilder $qb, ?string $searchTerm): void
     {
         if ($searchTerm) {
@@ -62,7 +59,7 @@ public function findAllPays(): array
                 ->setParameter('searchTerm', '%'.$searchTerm.'%');
         }
     }
-
+    
     private function applyStatusFilter(QueryBuilder $qb, ?string $status): void
     {
         if ($status && $status !== 'all') {
@@ -70,7 +67,7 @@ public function findAllPays(): array
                 ->setParameter('status', $status);
         }
     }
-
+    
     private function applyDateFilters(
         QueryBuilder $qb,
         ?\DateTimeInterface $dateFrom,
@@ -80,13 +77,13 @@ public function findAllPays(): array
             $qb->andWhere('c.date_controle >= :dateFrom')
                 ->setParameter('dateFrom', $dateFrom);
         }
-
+        
         if ($dateTo) {
             $qb->andWhere('c.date_controle <= :dateTo')
                 ->setParameter('dateTo', $dateTo);
         }
     }
-
+    
     public function findWithLivraison(int $id): ?ControleDouanier
     {
         return $this->createQueryBuilder('c')
@@ -106,5 +103,32 @@ public function findAllPays(): array
             ->orderBy('c.date_controle', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+    
+    public function findBetweenDates(\DateTime $start, \DateTime $end): array {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.date_controle BETWEEN :start AND :end')
+            ->setParameter('start', $start->format('Y-m-d'))
+            ->setParameter('end', $end->format('Y-m-d'))
+            ->orderBy('c.date_controle', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+    
+    // Nouvelle méthode pour filtrer par statut
+    public function findBetweenDatesByStatus(\DateTime $start, \DateTime $end, ?string $status = null): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->andWhere('c.date_controle BETWEEN :start AND :end')
+            ->setParameter('start', $start->format('Y-m-d'))
+            ->setParameter('end', $end->format('Y-m-d'))
+            ->orderBy('c.date_controle', 'ASC');
+        
+        if ($status) {
+            $qb->andWhere('c.statut = :status')
+               ->setParameter('status', $status);
+        }
+        
+        return $qb->getQuery()->getResult();
     }
 }

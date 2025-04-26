@@ -2,17 +2,20 @@
   "name": "your-project-name",
   "version": "1.0.0",
   "scripts": {
-      "dev": "encore dev",
-      "watch": "encore dev --watch",
-      "build": "encore production"
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production"
   },
   "devDependencies": {
-      "@symfony/webpack-encore": "^1.0.0",
-      "webpack": "^5.0.0",
-      "webpack-cli": "^4.0.0",
-      "@fullcalendar/core": "^6.1.17",
-      "@fullcalendar/daygrid": "^6.1.17",
-      "@fullcalendar/interaction": "^6.1.17",
-      "fullcalendar": "^6.1.17"
+    "@fullcalendar/core": "^6.1.17",
+    "@fullcalendar/daygrid": "^6.1.17",
+    "@fullcalendar/interaction": "^6.1.17",
+    "@symfony/webpack-encore": "^1.0.0",
+    "fullcalendar": "^6.1.17",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^4.0.0"
+  },
+  "dependencies": {
+    "@fullcalendar/timegrid": "^6.1.17"
   }
 }
