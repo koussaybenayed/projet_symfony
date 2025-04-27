@@ -32,7 +32,8 @@ class ControleDouanierController extends AbstractController
         }
 
         $statistics = $this->getStatistics($controleDouaniers);
-        $pendingControlsCount = count($this->checkPendingControls($controleDouaniers));
+        // Modification ici - compter tous les contrôles en attente, pas seulement ceux des 2 prochains jours
+        $pendingControlsCount = $statistics['En attente'];
 
         return $this->render('controle_douanier/index.html.twig', [
             'controle_douaniers' => $controleDouaniers,
