@@ -3,6 +3,7 @@ security:
         App\Entity\User:
             algorithm: plaintext
 
+    
     providers:
         app_user_provider:
             entity:
@@ -15,19 +16,18 @@ security:
             security: false
 
         main:
+            user_checker: App\Security\UserChecker
             lazy: true
             provider: app_user_provider
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                username_parameter: _username
-                password_parameter: _password
-                enable_csrf: true
-                success_handler: App\Security\LoginSuccessHandler
+            custom_authenticators:
+                - App\Security\LoginFormAuthenticator
+            entry_point: App\Security\LoginFormAuthenticator
+
             logout:
                 path: app_logout
-
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/user/newuser, roles: PUBLIC_ACCESS }
+        - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+        - { path: ^/verify-code, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }

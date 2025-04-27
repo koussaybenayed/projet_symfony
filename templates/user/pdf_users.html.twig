@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des utilisateurs</title>
+    <style>
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #3498db;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .date {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+            text-align: left;
+        }
+        td {
+            padding: 8px;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Liste des Utilisateurs</h1>
+        <div class="date">Généré le {{ "now"|date("d/m/Y H:i") }}</div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.userUsername }}</td>
+                <td>{{ user.userFirstname }}</td>
+                <td>{{ user.userLastname }}</td>
+                <td>{{ user.userEmail }}</td>
+                <td>{{ user.userPhonenumber }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <p>Document généré automatiquement - {{ total_users }} utilisateurs au total</p>
+    </div>
+</body>
+</html> 

@@ -10,7 +10,7 @@ use App\Repository\BilletRepository;
 
 class FrontController extends AbstractController
 {
-    #[Route('/', name: 'homepage')]
+    #[Route('/tt', name: 'homepage')]
     public function index(): Response
     {
         return $this->render('front/index.html.twig', [

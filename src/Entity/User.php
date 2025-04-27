@@ -51,6 +51,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $user_lastname = null;
+   
+    
 
     #[ORM\Column(type: 'date', nullable: true)]
     #[Assert\LessThan([
@@ -109,8 +111,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->reclamations = new ArrayCollection();
         $this->reservations = new ArrayCollection();
     }
-
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $isActive = true;
     // Getters & Setters (shortened for clarity, expand as needed)
+    public function getisActive(): bool
+{
+    return $this->isActive;
+}
+
+public function setIsActive(bool $isActive): self
+{
+    $this->isActive = $isActive;
+    return $this;
+}
     public function getUserId(): ?int { return $this->user_id; }
 
     public function getUserUsername(): ?string { return $this->user_username; }

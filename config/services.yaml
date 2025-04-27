@@ -7,10 +7,16 @@ parameters:
 
 
 services:
+    Symfony\Component\Security\Core\User\UserCheckerInterface: '@App\Security\UserChecker'
+    App\Security\UserChecker: ~
     App\Security\LoginSuccessHandler:
         arguments:
             $router: '@router'
-    # default configuration for services in *this* file
+    # config/services.yaml
+    App\Security\UserChecker:
+        tags: ['monolog.logger', 'security.user_checker']
+
+     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.

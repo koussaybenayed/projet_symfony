@@ -73,13 +73,15 @@
     <div class="login-container">
         <h1>Login</h1>
 
-        {% if error %}
-            <div class="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        {% endif %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
 
         {% if app.user %}
             <div class="already-logged-in">
-                You are logged in as {{ app.user.userIdentifier }} —
+                You are logged in as {{ app.user.userIdentifier }} — 
                 <a href="{{ path('app_logout') }}">Logout</a>
             </div>
         {% else %}
@@ -87,12 +89,16 @@
                 <input type="text" value="{{ last_username }}" name="_username" placeholder="Username" required autofocus>
                 <input type="password" name="_password" placeholder="Password" required>
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <div class="g-recaptcha" data-sitekey="6Lfyyh8rAAAAAO0sGM-1JWJvYy016iDgwz9BNdb0"></div>
                 <button type="submit">Log in</button>
             </form>
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
         {% endif %}
-         <div class="small-text">
-        Already have an account?
-        <a href="{{ path('app_user_neww') }}">sign up</a> {# Replace "#" with your login route path if available #}
-    </div>
+        
+        <div class="small-text">
+            Don't have an account? 
+            <a href="{{ path('app_user_neww') }}">Sign up</a>
+        </div>
+        <a href="{{ path('app_forgot_password') }}">Forgot your password?</a>
     </div>
 {% endblock %}

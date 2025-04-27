@@ -3,57 +3,289 @@
 {% block title %}User Dashboard{% endblock %}
 
 {% block body %}
-    <h1 style="margin-bottom: 20px;">User List</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Password</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Birthday</th>
-                <th>Gender</th>
-                <th>Picture</th>
-                <th>Phone</th>
-                <th>Level</th>
-                <th>Role</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.userUsername }}</td>
-                <td>{{ user.userEmail }}</td>
-                <td>{{ user.userPassword }}</td>
-                <td>{{ user.userFirstname }}</td>
-                <td>{{ user.userLastname }}</td>
-                <td>{{ user.userBirthday ? user.userBirthday|date('Y-m-d') : '' }}</td>
-                <td>{{ user.userGender }}</td>
-                <td>
-                    {% if user.userPicture %}
-                        <img src="{{ asset('uploads/pictures/' ~ user.userPicture) }}" alt="Profile" width="60">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">User Management</h5>
+            <div>
+                <a class="btn btn-primary" href="{{ path('app_user_new') }}">
+                    <i class="tf-icons bx bx-plus"></i> Create New User
+                </a>
+                <a class="btn btn-danger" href="{{ path('app_user_export_pdf') }}">
+                    <i class="tf-icons bx bx-file-pdf"></i> Export to PDF
+                </a>
+            </div>
+        </div>
+    
+        <div class="card-body">
+            <div class="mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Advanced Search</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="search-criteria">Search Criteria</label>
+                                <select id="search-criteria" class="form-select">
+                                    <option value="">Select a criteria</option>
+                                    <option value="username">Username</option>
+                                    <option value="firstname">First Name</option>
+                                    <option value="lastname">Last Name</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="search-value">Search Value</label>
+                                <input type="text" id="search-value" class="form-control" placeholder="Enter search value" disabled>
+                            </div>
+                            <div class="col-md-2 mb-3 d-flex align-items-end">
+                                <button id="clear-search" class="btn btn-secondary w-100">
+                                    <i class="tf-icons bx bx-reset"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div id="search-status" class="alert alert-info mt-2" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="users-table">
+                    <thead>
+                        <tr>
+                            <th>USERNAME</th>
+                            <th>EMAIL</th>
+                            <th>PASSWORD</th>
+                            <th>FIRST NAME</th>
+                            <th>LAST NAME</th>
+                            <th>BIRTHDAY</th>
+                            <th>GENDER</th>
+                            <th>PICTURE</th>
+                            <th>PHONE</th>
+                            <th>LEVEL</th>
+                            <th>ROLE</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.userUsername }}</td>
+                            <td>{{ user.userEmail }}</td>
+                            <td>{{ user.userPassword }}</td>
+                            <td>{{ user.userFirstname }}</td>
+                            <td>{{ user.userLastname }}</td>
+                            <td>{{ user.userBirthday ? user.userBirthday|date('Y-m-d') : '' }}</td>
+                            <td>{{ user.userGender }}</td>
+                            <td class="text-center">
+                                {% if user.userPicture %}
+                                    <img src="{{ asset('uploads/pictures/' ~ user.userPicture) }}" alt="Profile" class="rounded-circle" width="40" height="40">
+                                {% else %}
+                                    <span class="badge bg-label-secondary">No Image</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.userPhonenumber }}</td>
+                            <td>{{ user.userLevel }}</td>
+                            <td>{{ user.userRole }}</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a class="btn btn-sm btn-info" href="{{ path('app_user_show', {'user_id': user.getUserId()}) }}">
+                                        <i class="tf-icons bx bx-show"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-primary" href="{{ path('app_user_edit', {'user_id': user.getUserId()}) }}">
+                                        <i class="tf-icons bx bx-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
                     {% else %}
-                        <span>No Picture</span>
-                    {% endif %}
-                </td>
-                <td>{{ user.userPhonenumber }}</td>
-                <td>{{ user.userLevel }}</td>
-                <td>{{ user.userRole }}</td>
-                <td>
-                    <a class="btn" href="{{ path('app_user_show', {'user_id':  user.getUserId()}) }}">Show</a>
-                    <a class="btn" href="{{ path('app_user_edit', {'user_id':user.getUserId()}) }}">Edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="13">No users found.</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                        <tr>
+                            <td colspan="12" class="text-center">No users found.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-    <a class="btn" href="{{ path('app_user_new') }}">Create New</a>
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const criteriaSelect = document.getElementById('search-criteria');
+            const valueInput = document.getElementById('search-value');
+            const clearBtn = document.getElementById('clear-search');
+            const tableBody = document.getElementById('users-table-body');
+            const searchStatus = document.getElementById('search-status');
+            
+            // Search URL from Symfony route - ensure this generates the correct path
+            const searchUrl = "{{ path('app_user_api_search') }}";
+            
+            console.log('Search URL:', searchUrl); // Debug: check actual URL in console
+            
+            // Add event listeners
+            criteriaSelect.addEventListener('change', handleCriteriaChange);
+            valueInput.addEventListener('input', debounceSearch);
+            clearBtn.addEventListener('click', clearSearch);
+            
+            // Debounce function to limit API calls
+            let debounceTimer;
+            function debounceSearch() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(performSearch, 300);
+            }
+            
+            // Enable/disable search input based on criteria selection
+            function handleCriteriaChange() {
+                if (criteriaSelect.value) {
+                    valueInput.disabled = false;
+                    valueInput.focus();
+                    valueInput.placeholder = `Search by ${criteriaSelect.options[criteriaSelect.selectedIndex].text}...`;
+                    
+                    if (valueInput.value.trim()) {
+                        performSearch();
+                    }
+                } else {
+                    valueInput.disabled = true;
+                    valueInput.value = '';
+                    valueInput.placeholder = 'Select a criteria first';
+                    resetToOriginalData();
+                }
+            }
+            
+            // Reset table to original data
+            function resetToOriginalData() {
+                showStatus('info', 'Resetting to original data...');
+                
+                fetch(window.location.href)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newTableBody = doc.getElementById('users-table-body');
+                        tableBody.innerHTML = newTableBody.innerHTML;
+                        hideStatus();
+                    })
+                    .catch(error => {
+                        console.error('Error resetting data:', error);
+                        showStatus('danger', `Error resetting data: ${error.message}`);
+                    });
+            }
+            
+            // Execute the search
+            function performSearch() {
+                const criteria = criteriaSelect.value;
+                const value = valueInput.value.trim();
+                
+                if (!criteria || !value) {
+                    if (!value) resetToOriginalData();
+                    return;
+                }
+                
+                // Show loading indicator
+                tableBody.innerHTML = '<tr><td colspan="12" class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+                showStatus('info', `Searching for ${criteria} containing "${value}"...`);
+                
+                // Build URL with parameters
+                const url = `${searchUrl}?criteria=${encodeURIComponent(criteria)}&value=${encodeURIComponent(value)}`;
+                
+                // Make AJAX request
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Search failed. Server returned ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        updateTable(data);
+                        showStatus('success', `Found ${data.length} users matching "${value}" in ${criteria}`);
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        tableBody.innerHTML = `<tr><td colspan="12" class="text-center py-3 text-danger">${error.message}</td></tr>`;
+                        showStatus('danger', `Error: ${error.message}`);
+                    });
+            }
+            
+            // Update table with search results
+            function updateTable(users) {
+                if (users.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="12" class="text-center py-4">No users found matching your search criteria.</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                
+                users.forEach(user => {
+                    // Format picture display
+                    const pictureHtml = user.userPicture 
+                        ? `<img src="{{ asset('uploads/pictures/') }}/${user.userPicture}" alt="Profile" class="rounded-circle" width="40" height="40">` 
+                        : '<span class="badge bg-label-secondary">No Image</span>';
+                    
+                    html += `
+                        <tr>
+                            <td>${escapeHtml(user.userUsername || '')}</td>
+                            <td>${escapeHtml(user.userEmail || '')}</td>
+                            <td>${escapeHtml(user.userPassword || '')}</td>
+                            <td>${escapeHtml(user.userFirstname || '')}</td>
+                            <td>${escapeHtml(user.userLastname || '')}</td>
+                            <td>${escapeHtml(user.userBirthday || '')}</td>
+                            <td>${escapeHtml(user.userGender || '')}</td>
+                            <td class="text-center">${pictureHtml}</td>
+                            <td>${escapeHtml(user.userPhonenumber || '')}</td>
+                            <td>${escapeHtml(user.userLevel || '')}</td>
+                            <td>${escapeHtml(user.userRole || '')}</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a class="btn btn-sm btn-info" href="{{ path('app_user_show', {'user_id': 'PLACEHOLDER'}) }}".replace('PLACEHOLDER', user.userId)>
+                                        <i class="tf-icons bx bx-show"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-primary" href="{{ path('app_user_edit', {'user_id': 'PLACEHOLDER'}) }}".replace('PLACEHOLDER', user.userId)>
+                                        <i class="tf-icons bx bx-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+            }
+            
+            // Helper function to display status messages
+            function showStatus(type, message) {
+                searchStatus.className = `alert alert-${type} mt-2`;
+                searchStatus.innerHTML = message;
+                searchStatus.style.display = 'block';
+            }
+            
+            // Hide status message
+            function hideStatus() {
+                searchStatus.style.display = 'none';
+            }
+            
+            // Helper function to escape HTML
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+            
+            // Clear search fields and reset
+            function clearSearch() {
+                criteriaSelect.value = '';
+                valueInput.value = '';
+                valueInput.disabled = true;
+                valueInput.placeholder = 'Enter search value';
+                resetToOriginalData();
+            }
+        });
+    </script>
 {% endblock %}

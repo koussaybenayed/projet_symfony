@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Statistics{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-4">User Statistics</h1>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">Total Users</div>
+                    <div class="card-body">
+                        <h2 class="card-title">{{ totalUsers }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-header">Active Users</div>
+                    <div class="card-body">
+                        <h2 class="card-title">{{ activeUsers }}</h2>
+                        <p class="card-text">{{ activeRatio }}% of total</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-header">Inactive Users</div>
+                    <div class="card-body">
+                        <h2 class="card-title">{{ inactiveUsers }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2>Users by Role</h2>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Role</th>
+                            <th>User Count</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for role in usersByRole %}
+                            <tr>
+                                <td>{{ role.role_name }}</td>
+                                <td>{{ role.userCount }}</td>
+                                <td>{{ totalUsers > 0 ? ((role.userCount / totalUsers) * 100)|round(2) : 0 }}%</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Users by Level</h2>
+                <button id="loadLevelStats" class="btn btn-primary">Stats</button>
+            </div>
+            <div class="card-body">
+                <div id="levelChartContainer" class="chart-container">
+                    <canvas id="levelChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadButton = document.getElementById('loadLevelStats');
+            const chartContainer = document.getElementById('levelChartContainer');
+            let levelChart = null;
+
+            loadButton.addEventListener('click', function() {
+                // Afficher une animation de chargement si nécessaire
+                loadButton.disabled = true;
+                loadButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+                
+                // Faire une requête AJAX pour récupérer les données
+                fetch('/user/api/levels')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Préparer les données pour le graphique
+                        const labels = data.map(item => `Level ${item.level}`);
+                        const counts = data.map(item => item.userCount);
+                        const backgroundColors = generateColors(data.length);
+                        
+                        // Détruire le graphique existant s'il y en a un
+                        if (levelChart) {
+                            levelChart.destroy();
+                        }
+                        
+                        // Créer le graphique
+                        const ctx = document.getElementById('levelChart').getContext('2d');
+                        levelChart = new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: counts,
+                                    backgroundColor: backgroundColors,
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'right',
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.raw || 0;
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = Math.round((value / total) * 100);
+                                                return `${label}: ${value} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        
+                        // Réactiver le bouton
+                        loadButton.disabled = false;
+                        loadButton.innerHTML = 'Stats';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching level data:', error);
+                        loadButton.disabled = false;
+                        loadButton.innerHTML = 'Stats';
+                        alert('Error loading level statistics');
+                    });
+            });
+            
+            // Fonction pour générer des couleurs aléatoires
+            function generateColors(count) {
+                const colors = [];
+                for (let i = 0; i < count; i++) {
+                    const hue = Math.floor(i * (360 / count));
+                    colors.push(`hsl(${hue}, 70%, 60%)`);
+                }
+                return colors;
+            }
+        });
+    </script>
+{% endblock %}

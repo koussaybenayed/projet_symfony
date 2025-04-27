@@ -95,12 +95,17 @@
                     <li class="menu-item active open">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-home-smile"></i>
-                            <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
+                            <div class="text-truncate" data-i18n="Dashboards">SideBar</div>
                             <span class="badge rounded-pill bg-danger ms-auto">.</span>
                         </a>
                      
                       
                        <ul class="menu-sub">
+                       <li class="menu-item active">
+        <a href="{{ path('app_user_stats') }}" class="menu-link">
+            <div class="text-truncate" data-i18n="Analytics">Dashboards</div>
+        </a>
+    </li>
     <li class="menu-item active">
         <a href="{{ path('app_user_index') }}" class="menu-link">
             <div class="text-truncate" data-i18n="Analytics">User</div>
