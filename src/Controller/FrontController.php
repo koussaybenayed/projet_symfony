@@ -10,13 +10,7 @@ use App\Repository\BilletRepository;
 
 class FrontController extends AbstractController
 {
-    #[Route('/', name: 'homepage')]
-    public function index(): Response
-    {
-        return $this->render('front/index.html.twig', [
-            'title' => 'Agen | Bootstrap Agency Template',
-        ]);
-    }
+    
 
 
     #[Route('/billets', name: 'front_billet_list', methods: ['GET'])]

@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Constraints\Regex;
 
 #[ORM\Entity(repositoryClass: BilletRepository::class)]
 #[ORM\Table(name: 'billets')]
@@ -19,33 +20,58 @@ class Billet
     private ?int $id = null;
 
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Assert\NotBlank(message: 'La date de départ est obligatoire.')]
+    #[Assert\Type(type: \DateTimeInterface::class, message: 'La date de départ doit être une date valide.')]
     private ?\DateTimeInterface $dateDepart = null;
 
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Assert\NotBlank(message: 'La date d\'arrivée est obligatoire.')]
+    #[Assert\Type(type: \DateTimeInterface::class, message: 'La date d\'arrivée doit être une date valide.')]
     private ?\DateTimeInterface $dateArrive = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: 'La compagnie est obligatoire.')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z\s]+$/',
+        message: 'La compagnie ne doit contenir que des lettres et des espaces.'
+    )]
     private ?string $compagnie = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: 'Le lieu de départ est obligatoire.')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z\s]+$/',
+        message: 'Le lieu de départ ne doit contenir que des lettres et des espaces.'
+    )]
     private ?string $depart = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: 'La destination est obligatoire.')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z\s]+$/',
+        message: 'La destination ne doit contenir que des lettres et des espaces.'
+    )]
     private ?string $destination = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
+    #[Assert\NotBlank(message: 'Le prix est requis.')]
+    #[Assert\Positive(message: 'Le prix doit être un nombre positif.')]
     private ?float $prix = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: 'Le type de transport est obligatoire.')]
     private ?string $typeTransport = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: 'La classe est obligatoire.')]
     private ?string $classe = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: 'Le statut est obligatoire.')]
     private ?string $statut = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
+    #[Assert\NotNull(message: 'Veuillez sélectionner un utilisateur.')]
     private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: Reduction::class)]

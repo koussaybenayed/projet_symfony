@@ -1,13 +1,11 @@
 <?php
 
 namespace App\Entity;
+use App\Entity\Billet;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
 use App\Repository\AssistanceRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AssistanceRepository::class)]
 #[ORM\Table(name: 'assistance')]
@@ -17,6 +15,39 @@ class Assistance
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
+
+    #[ORM\OneToOne(targetEntity: Billet::class, inversedBy: 'assistance')]
+    #[ORM\JoinColumn(name: 'billet_id', referencedColumnName: 'id', unique: true)]
+    #[Assert\NotNull(message: 'Le billet associé est requis.')]
+    private ?Billet $billet = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: 'Le type d’assistance est requis.')]
+    private ?string $typeAssistance = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'L’aéroport ou port est requis.')]
+    private ?string $aeroportPort = null;
+
+    #[ORM\Column(type: 'datetime', nullable: false)]
+    #[Assert\NotBlank(message: 'L’heure de prise en charge est requise.')]
+    #[Assert\Type(\DateTimeInterface::class)]
+    #[Assert\GreaterThanOrEqual('today', message: 'La date doit être aujourd’hui ou plus tard.')]
+    private ?\DateTimeInterface $heurePriseEnCharge = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le point de rendez-vous est requis.')]
+    private ?string $pointRendezVous = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Les informations complémentaires sont requises.')]
+    private ?string $informationsComplementaires = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le statut est requis.')]
+    private ?string $statut = null;
+
+    // Getters & Setters
 
     public function getId(): ?int
     {
@@ -29,10 +60,6 @@ class Assistance
         return $this;
     }
 
-    #[ORM\OneToOne(targetEntity: Billet::class, inversedBy: 'assistance')]
-    #[ORM\JoinColumn(name: 'billet_id', referencedColumnName: 'id', unique: true)]
-    private ?Billet $billet = null;
-
     public function getBillet(): ?Billet
     {
         return $this->billet;
@@ -44,78 +71,60 @@ class Assistance
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $type_assistance = null;
-
-    public function getType_assistance(): ?string
+    public function getTypeAssistance(): ?string
     {
-        return $this->type_assistance;
+        return $this->typeAssistance;
     }
 
-    public function setType_assistance(?string $type_assistance): self
+    public function setTypeAssistance(?string $typeAssistance): self
     {
-        $this->type_assistance = $type_assistance;
+        $this->typeAssistance = $typeAssistance;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $aeroport_port = null;
-
-    public function getAeroport_port(): ?string
+    public function getAeroportPort(): ?string
     {
-        return $this->aeroport_port;
+        return $this->aeroportPort;
     }
 
-    public function setAeroport_port(?string $aeroport_port): self
+    public function setAeroportPort(?string $aeroportPort): self
     {
-        $this->aeroport_port = $aeroport_port;
+        $this->aeroportPort = $aeroportPort;
         return $this;
     }
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $heure_prise_en_charge = null;
-
-    public function getHeure_prise_en_charge(): ?\DateTimeInterface
+    public function getHeurePriseEnCharge(): ?\DateTimeInterface
     {
-        return $this->heure_prise_en_charge;
+        return $this->heurePriseEnCharge;
     }
 
-    public function setHeure_prise_en_charge(?\DateTimeInterface $heure_prise_en_charge): self
+    public function setHeurePriseEnCharge(?\DateTimeInterface $heurePriseEnCharge): self
     {
-        $this->heure_prise_en_charge = $heure_prise_en_charge;
+        $this->heurePriseEnCharge = $heurePriseEnCharge;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $point_rendez_vous = null;
-
-    public function getPoint_rendez_vous(): ?string
+    public function getPointRendezVous(): ?string
     {
-        return $this->point_rendez_vous;
+        return $this->pointRendezVous;
     }
 
-    public function setPoint_rendez_vous(?string $point_rendez_vous): self
+    public function setPointRendezVous(?string $pointRendezVous): self
     {
-        $this->point_rendez_vous = $point_rendez_vous;
+        $this->pointRendezVous = $pointRendezVous;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $informations_complementaires = null;
-
-    public function getInformations_complementaires(): ?string
+    public function getInformationsComplementaires(): ?string
     {
-        return $this->informations_complementaires;
+        return $this->informationsComplementaires;
     }
 
-    public function setInformations_complementaires(?string $informations_complementaires): self
+    public function setInformationsComplementaires(?string $informationsComplementaires): self
     {
-        $this->informations_complementaires = $informations_complementaires;
+        $this->informationsComplementaires = $informationsComplementaires;
         return $this;
     }
-
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $statut = null;
 
     public function getStatut(): ?string
     {
@@ -127,65 +136,4 @@ class Assistance
         $this->statut = $statut;
         return $this;
     }
-
-    public function getTypeAssistance(): ?string
-    {
-        return $this->type_assistance;
-    }
-
-    public function setTypeAssistance(?string $type_assistance): static
-    {
-        $this->type_assistance = $type_assistance;
-
-        return $this;
-    }
-
-    public function getAeroportPort(): ?string
-    {
-        return $this->aeroport_port;
-    }
-
-    public function setAeroportPort(?string $aeroport_port): static
-    {
-        $this->aeroport_port = $aeroport_port;
-
-        return $this;
-    }
-
-    public function getHeurePriseEnCharge(): ?\DateTimeInterface
-    {
-        return $this->heure_prise_en_charge;
-    }
-
-    public function setHeurePriseEnCharge(?\DateTimeInterface $heure_prise_en_charge): static
-    {
-        $this->heure_prise_en_charge = $heure_prise_en_charge;
-
-        return $this;
-    }
-
-    public function getPointRendezVous(): ?string
-    {
-        return $this->point_rendez_vous;
-    }
-
-    public function setPointRendezVous(?string $point_rendez_vous): static
-    {
-        $this->point_rendez_vous = $point_rendez_vous;
-
-        return $this;
-    }
-
-    public function getInformationsComplementaires(): ?string
-    {
-        return $this->informations_complementaires;
-    }
-
-    public function setInformationsComplementaires(?string $informations_complementaires): static
-    {
-        $this->informations_complementaires = $informations_complementaires;
-
-        return $this;
-    }
-
 }
