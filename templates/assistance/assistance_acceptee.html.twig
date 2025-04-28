@@ -50,4 +50,20 @@
     <p style="font-size: 16px; color: #333333; margin-top: 0;">
         L'équipe NaviFly
     </p>
+
+    {% set qrContent = 
+   'Type d\'assistance: ' ~ typeAssistance ~ '\n' ~
+   'Aéroport/Port: ' ~ aeroportPort ~ '\n' ~
+   'Heure de prise en charge: ' ~ heurePriseEnCharge ~ '\n' ~
+   'Point de rendez-vous: ' ~ pointRendezVous
+%}
+
+<p style="font-size: 16px; color: #333333; margin-bottom: 10px;">
+    Voici votre code QR contenant les informations de votre assistance :
+</p>
+
+<div style="text-align: center; margin: 20px 0;">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ qrContent|url_encode }}&size=200x200" alt="QR Code Assistance">
+</div>
+
 {% endblock %}
