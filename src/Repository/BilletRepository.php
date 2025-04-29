@@ -16,6 +16,16 @@ class BilletRepository extends ServiceEntityRepository
         parent::__construct($registry, Billet::class);
     }
 
+    public function countBilletsByDestination(): array
+{
+    return $this->createQueryBuilder('b')
+        ->select('b.destination, COUNT(b.id) AS count')
+        ->groupBy('b.destination')
+        ->getQuery()
+        ->getResult();
+}
+
+
     //    /**
     //     * @return Billet[] Returns an array of Billet objects
     //     */

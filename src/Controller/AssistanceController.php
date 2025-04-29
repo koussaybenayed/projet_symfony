@@ -136,9 +136,9 @@ final class AssistanceController extends AbstractController
         $email = (new TemplatedEmail())
             ->from(new Address('NaviFly@gmail.com', 'NaviFly'))
 
-            //->to($user->getEmail())
+            ->to($user->getEmail())
             //->to('balkiss0707@gmail.com')
-            ->to('ton-inbox@mailtrap.io')
+            //->to('ton-inbox@mailtrap.io')
 
             ->subject('Demande d\'assistance acceptée')
             ->htmlTemplate('assistance/assistance_acceptee.html.twig')

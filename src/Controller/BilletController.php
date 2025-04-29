@@ -41,6 +41,16 @@ final class BilletController extends AbstractController
             'form' => $form,
         ]);
     }
+    #[Route('/statistiques', name: 'app_billet_statistiques', methods: ['GET'])]
+public function statistiques(BilletRepository $billetRepository): Response
+{
+    $stats = $billetRepository->countBilletsByDestination();
+
+
+    return $this->render('billet/statistiques.html.twig', [
+        'stats' => $stats,
+    ]);
+}
 
     #[Route('/{id}', name: 'app_billet_show', methods: ['GET'])]
     public function show(Billet $billet): Response
@@ -68,14 +78,19 @@ final class BilletController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_billet_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_billet_delete', methods: ['POST'])]
     public function delete(Request $request, Billet $billet, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$billet->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($billet);
             $entityManager->flush();
         }
-
+    
         return $this->redirectToRoute('app_billet_index', [], Response::HTTP_SEE_OTHER);
     }
+    
+    
+
+
+
 }
