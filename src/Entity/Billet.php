@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Symfony\Component\Validator\Constraints\Regex;
 
 #[ORM\Entity(repositoryClass: BilletRepository::class)]
 #[ORM\Table(name: 'billets')]
@@ -77,20 +76,14 @@ class Billet
     #[ORM\ManyToOne(targetEntity: Reduction::class)]
     private ?Reduction $reduction = null;
 
-    #[ORM\ManyToOne(targetEntity: Vehicule::class)]
-    #[ORM\JoinColumn(name: "id_vehicule", referencedColumnName: "id")]
-    private ?Vehicule $vehicule = null;
+    
 
     #[ORM\OneToOne(targetEntity: Assistance::class, mappedBy: 'billet')]
     private ?Assistance $assistance = null;
 
-    #[ORM\OneToMany(targetEntity: Paiement::class, mappedBy: 'billet')]
-    private Collection $paiements;
+   
 
-    public function __construct()
-    {
-        $this->paiements = new ArrayCollection();
-    }
+ 
 
     public function getId(): ?int
     {
@@ -218,16 +211,7 @@ class Billet
         return $this;
     }
 
-    public function getVehicule(): ?Vehicule
-    {
-        return $this->vehicule;
-    }
 
-    public function setVehicule(?Vehicule $vehicule): self
-    {
-        $this->vehicule = $vehicule;
-        return $this;
-    }
 
     public function getAssistance(): ?Assistance
     {
@@ -240,24 +224,7 @@ class Billet
         return $this;
     }
 
-    public function getPaiements(): Collection
-    {
-        return $this->paiements;
-    }
 
-    public function addPaiement(Paiement $paiement): self
-    {
-        if (!$this->paiements->contains($paiement)) {
-            $this->paiements[] = $paiement;
-        }
-        return $this;
-    }
-
-    public function removePaiement(Paiement $paiement): self
-    {
-        $this->paiements->removeElement($paiement);
-        return $this;
-    }
 
     #[Assert\Callback]
     public function validateDates(ExecutionContextInterface $context): void

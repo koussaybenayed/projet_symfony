@@ -140,33 +140,9 @@ class User
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Paiement::class, mappedBy: 'user')]
-    private Collection $paiements;
+    
 
-    /**
-     * @return Collection<int, Paiement>
-     */
-    public function getPaiements(): Collection
-    {
-        if (!$this->paiements instanceof Collection) {
-            $this->paiements = new ArrayCollection();
-        }
-        return $this->paiements;
-    }
-
-    public function addPaiement(Paiement $paiement): self
-    {
-        if (!$this->getPaiements()->contains($paiement)) {
-            $this->getPaiements()->add($paiement);
-        }
-        return $this;
-    }
-
-    public function removePaiement(Paiement $paiement): self
-    {
-        $this->getPaiements()->removeElement($paiement);
-        return $this;
-    }
+ 
 
     #[ORM\OneToMany(targetEntity: Reclamation::class, mappedBy: 'user')]
     private Collection $reclamations;

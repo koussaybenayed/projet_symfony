@@ -113,46 +113,5 @@ class Coli
         return $this;
     }
 
-    #[ORM\OneToOne(targetEntity: Livraison::class, mappedBy: 'coli')]
-    private ?Livraison $livraison = null;
-
-    public function getLivraison(): ?Livraison
-    {
-        return $this->livraison;
-    }
-
-    public function setLivraison(?Livraison $livraison): self
-    {
-        $this->livraison = $livraison;
-        return $this;
-    }
-
-    #[ORM\OneToMany(targetEntity: Paiement::class, mappedBy: 'coli')]
-    private Collection $paiements;
-
-    /**
-     * @return Collection<int, Paiement>
-     */
-    public function getPaiements(): Collection
-    {
-        if (!$this->paiements instanceof Collection) {
-            $this->paiements = new ArrayCollection();
-        }
-        return $this->paiements;
-    }
-
-    public function addPaiement(Paiement $paiement): self
-    {
-        if (!$this->getPaiements()->contains($paiement)) {
-            $this->getPaiements()->add($paiement);
-        }
-        return $this;
-    }
-
-    public function removePaiement(Paiement $paiement): self
-    {
-        $this->getPaiements()->removeElement($paiement);
-        return $this;
-    }
 
 }

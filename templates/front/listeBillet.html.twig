@@ -59,9 +59,17 @@
               <p class="card-text"><strong>Prix :</strong> {{ billet.prix ? billet.prix ~ ' €' : 'Non spécifié' }}</p>
               <p class="card-text"><strong>Type de transport :</strong> {{ billet.typeTransport }}</p>
               <p class="card-text"><strong>Classe :</strong> {{ billet.classe }}</p>
-              {# Lien pour réserver avec ou sans assistance #}
               <a href="{{ path('app_assistance_new', { billetId: billet.id }) }}" class="btn btn-primary">Réserver avec Assistance</a>
-              {# <a href="/billet/{{ billet.id }}/reserver?assistance=0" class="btn btn-secondary">Réserver sans Assistance</a> #}
+
+              <form action="{{ path('toggle_billet_favori', { id: billet.id }) }}" method="post" style="display: inline;">
+                  <button type="submit" class="btn btn-outline-danger mt-2">
+                      {% if billet.id in app.session.get('favoris_billets', []) %}
+                           Retirer des favoris
+                      {% else %}
+                           Ajouter aux favoris
+                      {% endif %}
+                  </button>
+              </form>
             </div>
           </div>
         </div>

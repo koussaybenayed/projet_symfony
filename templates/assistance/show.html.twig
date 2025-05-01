@@ -1,55 +1,106 @@
 {% extends 'basefront.html.twig' %}
 
-{% block title %}Assistance{% endblock %}
+{% block title %}Détails de l'assistance - NaviFly{% endblock %}
 
 {% block body %}
-    <h1>Assistance</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ assistance.id }}</td>
-            </tr>
-            <tr>
-                <th>Type_assistance</th>
-                <td>{{ assistance.typeAssistance }}</td>
-            </tr>
-            <tr>
-                <th>Aeroport_port</th>
-                <td>{{ assistance.aeroportPort }}</td>
-            </tr>
-            <tr>
-                <th>Heure_prise_en_charge</th>
-                <td>{{ assistance.heurePriseEnCharge ? assistance.heurePriseEnCharge|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Point_rendez_vous</th>
-                <td>{{ assistance.pointRendezVous }}</td>
-            </tr>
-            <tr>
-                <th>Informations_complementaires</th>
-                <td>{{ assistance.informationsComplementaires }}</td>
-            </tr>
-            <tr>
-                <th>Statut</th>
-                <td>{{ assistance.statut }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_assistance_index') }}">back to list</a>
-
-    <a href="{{ path('app_assistance_edit', {'id': assistance.id}) }}">edit</a>
-<a href="{{ path('assistance_accept', {'id': assistance.id}) }}">Envoyer un email</a>
-
-{% for label, messages in app.flashes %}
-    {% for message in messages %}
-        <div class="alert alert-{{ label }}">
-            {{ message }}
+<div class="container-max my-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h1 class="h4 mb-0">Détails de l'assistance</h1>
         </div>
-    {% endfor %}
-{% endfor %}
+        
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h5 class="text-muted mb-3">Informations principales</h5>
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span class="fw-bold">Type d'assistance:</span>
+                            <span class="text-primary">{{ assistance.typeAssistance }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span class="fw-bold">Aéroport/Port:</span>
+                            <span>{{ assistance.aeroportPort }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span class="fw-bold">Statut:</span>
+                            <span class="badge bg-{{ assistance.statut == 'acceptée' ? 'success' : 'warning' }}">
+                                {{ assistance.statut }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h5 class="text-muted mb-3">Détails opérationnels</h5>
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span class="fw-bold">Heure de prise en charge:</span>
+                            <span>{{ assistance.heurePriseEnCharge ? assistance.heurePriseEnCharge|date('d/m/Y H:i') : 'Non définie' }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span class="fw-bold">Point de rendez-vous:</span>
+                            <span>{{ assistance.pointRendezVous }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5 class="text-muted mb-3">Informations complémentaires</h5>
+                <div class="p-3 bg-light rounded">
+                    {{ assistance.informationsComplementaires ? assistance.informationsComplementaires : 'Aucune information supplémentaire' }}
+                </div>
+            </div>
 
-    {{ include('assistance/_delete_form.html.twig') }}
+            <!-- Intégration de la réunion en ligne via Jitsi Meet -->
+            <div class="mt-4">
+                <h5 class="text-muted mb-3">Réunion en ligne</h5>
+                <div class="p-3 bg-light rounded">
+                    <p>Si vous souhaitez organiser une réunion pour discuter de cette assistance, vous pouvez rejoindre la réunion en ligne ci-dessous.</p>
+
+                    <!-- Intégration de l'iframe pour Jitsi Meet -->
+                    <iframe
+                        src="https://meet.jit.si/{{ 'assistance-' ~ assistance.id }}"
+                        width="100%"
+                        height="500px"
+                        style="border: 0;"
+                        allow="camera; microphone; fullscreen; display-capture"
+                        loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer bg-light d-flex justify-content-between align-items-center">
+            <a href="{{ path('app_assistance_index') }}" class="btn btn-outline-secondary">
+                <i class="ti-arrow-left me-1"></i> Retour à la liste
+            </a>
+            
+            <div class="btn-group">
+                <a href="{{ path('app_assistance_edit', {'id': assistance.id}) }}" class="btn btn-primary">
+                    <i class="ti-pencil me-1"></i> Modifier
+                </a>
+                <a href="{{ path('assistance_accept', {'id': assistance.id}) }}" class="btn btn-success">
+                    <i class="ti-email me-1"></i> Envoyer un email
+                </a>
+
+                <!-- Nouveau bouton pour créer une réunion -->
+                <a href="https://meet.jit.si/{{ 'assistance-' ~ assistance.id }}" class="btn btn-info" target="_blank">
+                    <i class="ti-video-camera me-1"></i> Créer une réunion
+                </a>
+
+                {{ include('assistance/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} mt-4">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
 {% endblock %}
