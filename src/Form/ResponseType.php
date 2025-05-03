@@ -7,8 +7,8 @@ use App\Entity\Response;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\GreaterThan;
@@ -17,9 +17,13 @@ class ResponseType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Get the Response object from options
+        $response = $options['data'];
+
+        // Add the response_text field
         $builder
             ->add('response_text', TextareaType::class, [
-                'label' => 'response_text',
+                'label' => 'Response Text',
                 'attr' => [
                     'rows' => 5,
                     'class' => 'form-control',
@@ -27,11 +31,11 @@ class ResponseType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'response text cannot be blank'
+                        'message' => 'Response text cannot be blank'
                     ]),
                     new Length([
                         'min' => 5,
-                        'max' => 20,
+                        'max' => 255,
                         'minMessage' => 'Description must be at least {{ limit }} characters',
                         'maxMessage' => 'Description cannot exceed {{ limit }} characters'
                     ])
@@ -44,7 +48,6 @@ class ResponseType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    
                 ],
                 'empty_data' => null,
                 'constraints' => [
@@ -53,12 +56,22 @@ class ResponseType extends AbstractType
                         'message' => 'The date cannot be in the past'
                     ])
                 ]
-            ])
-                ->add('reclamation', EntityType::class, [
-                    'class' => Reclamation::class,
-                    'choice_label' => 'description',
-                ])
-        ;
+            ]);
+
+        // Conditionally add the 'reclamation' field if no reclamation exists for the response
+        if (!$response->getReclamation()) {
+            // If no reclamation is set on the response, show the 'reclamation' field
+            $builder->add('reclamation', EntityType::class, [
+                'class' => Reclamation::class,
+                'choice_label' => 'description',
+                'placeholder' => 'Select a Reclamation',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                ],
+            ]);
+        }
+        // If a reclamation is already associated, do not show the 'reclamation' field at all
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -24,16 +24,20 @@ final class ResponseController extends AbstractController
         ReclamationRepository $reclamationRepository
     ): HttpResponse {
         $searchTerm = $request->query->get('search');
-        
         $responses = $searchTerm 
             ? $responseRepository->findBySearchTerm($searchTerm)
             : $responseRepository->findAll();
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('response/_response_table.html.twig', [
+                'responses' => $responses,
+            ]);
+        }
 
         return $this->render('response/index.html.twig', [
             'responses' => $responses,
             'reclamations' => $reclamationRepository->findAll(),
         ]);
-
     }
 
     #[Route('/new', name: 'app_response_new', methods: ['GET', 'POST'])]
@@ -67,27 +71,19 @@ final class ResponseController extends AbstractController
     #[Route('/{id}/pdf', name: 'app_response_pdf', methods: ['GET'])]
     public function pdf(EntityResponse $response): HttpResponse
     {
-        // Configure Dompdf
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
         $pdfOptions->set('isRemoteEnabled', true);
         
         $dompdf = new Dompdf($pdfOptions);
-        
-        // Generate HTML for PDF
-        $html = $this->renderView('response/pdf.html.twig', [
-            'response' => $response
-        ]);
+        $html = $this->renderView('response/pdf.html.twig', ['response' => $response]);
         
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
-        
-        // Output PDF
-        $output = $dompdf->output();
-        
+
         return new HttpResponse(
-            $output,
+            $dompdf->output(),
             HttpResponse::HTTP_OK,
             [
                 'Content-Type' => 'application/pdf',
@@ -104,7 +100,6 @@ final class ResponseController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
             return $this->redirectToRoute('app_response_index', [], HttpResponse::HTTP_SEE_OTHER);
         }
 

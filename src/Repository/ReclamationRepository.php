@@ -23,7 +23,15 @@ class ReclamationRepository extends ServiceEntityRepository
         ->getQuery()
         ->getResult();
 }
-
+public function countReclamationsWithoutResponses(): int
+{
+    return $this->createQueryBuilder('r')
+        ->select('COUNT(r.id)')
+        ->leftJoin('r.response', 'resp')
+        ->where('resp.id IS NULL')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
     //    /**
     //     * @return Reclamation[] Returns an array of Reclamation objects
     //     */
