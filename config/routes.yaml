@@ -1,0 +1,10 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+#Custom OCR route (must be at root level, not under 'controllers')
+ocr_extract_text:
+    path: /ocr/extract-text
+    controller: App\Controller\OcrController::extractText
+    methods: POST

@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Billet{% endblock %}
+
+{% block body %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">ID</th>
+                                    <td>{{ billet.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Date de départ</th>
+                                    <td>{{ billet.dateDepart ? billet.dateDepart|date('d/m/Y H:i') : 'Non spécifié' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Date d'arrivée</th>
+                                    <td>{{ billet.dateArrive ? billet.dateArrive|date('d/m/Y H:i') : 'Non spécifié' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Utilisateur</th>
+                                    <td>{{ billet.user ? billet.user.user_username : 'Aucune' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Réduction</th>
+                                    <td>{{ billet.reduction ? billet.reduction.code : 'Aucune' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Type de transport</th>
+                                    <td>
+                                        <span class="badge 
+                                            {{ billet.typeTransport == 'Avion' 
+                                                ? 'bg-label-primary' 
+                                                : (billet.typeTransport == 'Bateau' 
+                                                    ? 'bg-label-info' 
+                                                    : 'bg-label-secondary') }}">
+                                            {{ billet.typeTransport }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Compagnie</th>
+                                    <td>{{ billet.compagnie }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Départ</th>
+                                    <td>{{ billet.depart }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Destination</th>
+                                    <td>{{ billet.destination }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Prix</th>
+                                    <td>{{ billet.prix }} €</td>
+                                </tr>
+                                <tr>
+                                    <th>Classe</th>
+                                    <td>
+                                        <span class="badge 
+                                            {{ billet.classe == 'Première' 
+                                                ? 'bg-label-warning text-dark' 
+                                                : (billet.classe == 'Business' 
+                                                    ? 'bg-label-info' 
+                                                    : (billet.classe == 'Économie' 
+                                                        ? 'bg-label-secondary' 
+                                                        : 'bg-label-light text-dark')) }}">
+                                            {{ billet.classe }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Statut</th>
+                                    <td>
+                                        <span class="badge 
+                                            {{ billet.statut == 'Confirmé' 
+                                                ? 'bg-label-success' 
+                                                : (billet.statut == 'Annulé' 
+                                                    ? 'bg-label-danger' 
+                                                    : (billet.statut == 'Réservé' 
+                                                        ? 'bg-label-warning text-dark' 
+                                                        : 'bg-label-light text-dark')) }}">
+                                            {{ billet.statut }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Assistance</th>
+                                    <td>{{ billet.assistance ? billet.assistance.id : 'Aucune' }}</td>
+                                </tr>
+                              
+                            </tbody>
+                        </table>
+                    </div>
+
+                                        <div class="mt-4 d-flex justify-content-between">
+                        <a href="{{ path('app_billet_index') }}" class="btn btn-outline-secondary">
+                            <i class="bx bx-arrow-back me-1"></i> Retour à la liste
+                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ path('app_billet_edit', {'id': billet.id}) }}" class="btn btn-primary">
+                                <i class="bx bx-edit me-1"></i> Modifier
+                            </a>
+                            <form method="post" action="{{ path('app_billet_delete', {'id': billet.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bx bx-trash me-1"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

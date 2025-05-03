@@ -1,0 +1,35 @@
+security:
+    password_hashers:
+        App\Entity\User:
+            algorithm: md5
+            encode_as_base64: false
+            iterations: 1
+
+    
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: user_username
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            user_checker: App\Security\UserChecker
+            lazy: true
+            provider: app_user_provider
+            custom_authenticators:
+                - App\Security\LoginFormAuthenticator
+            entry_point: App\Security\LoginFormAuthenticator
+
+            logout:
+                path: app_logout
+    access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/user/newuser, roles: PUBLIC_ACCESS }
+        - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+        - { path: ^/verify-code, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: ROLE_USER }

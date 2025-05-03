@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <form method="GET" class="my-4">
+        <div class="input-group">
+            <input type="text" 
+                   name="pays" 
+                   class="form-control"
+                   placeholder="Ex: France, Allemagne..."
+                   value="{{ pays_recherche ?? '' }}"
+                   required>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </div>
+    </form>
+
+    {% if pays_recherche %}
+        {% if controles is empty %}
+            <div class="alert alert-warning">Aucun résultat pour "{{ pays_recherche }}"</div>
+        {% else %}
+            <div class="list-group">
+                {% for controle in controles %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>#{{ controle.idControle }}</strong> - 
+                                {{ controle.paysDouane }} - 
+                                {{ controle.dateControle|date('d/m/Y') }}
+                            </div>
+                            <span class="badge bg-{{ 
+                                controle.statut == 'Validé' ? 'success' : 
+                                controle.statut == 'Rejeté' ? 'danger' : 'warning' 
+                            }}">
+                                {{ controle.statut }}
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

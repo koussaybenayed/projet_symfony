@@ -1,0 +1,30 @@
+{% for response in responses %}
+    <tr>
+        <td>{{ response.reclamation.user.userEmail ?? 'N/A' }}</td>
+        <td>{{ response.ResponseText }}</td>
+        <td>{{ response.createdAt ? response.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+        <td>
+            {% if response.reclamation %}
+                <span class="badge bg-info">{{ response.reclamation.description }}</span>
+            {% else %}
+                <span class="badge bg-secondary">No Reclamation</span>
+            {% endif %}
+        </td>
+        <td>
+            <div class="btn-group" role="group">
+                <a href="{{ path('app_response_show', {'id': response.id}) }}" class="btn btn-sm btn-primary">Show</a>
+                <a href="{{ path('app_response_edit', {'id': response.id}) }}" class="btn btn-sm btn-warning">Edit</a>
+                <form method="post" action="{{ path('app_response_delete', {'id': response.id}) }}" style="display:inline;" onsubmit="return confirm('Are you sure?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ response.id) }}">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="5" class="text-center">
+            <div class="alert alert-info">No responses found</div>
+        </td>
+    </tr>
+{% endfor %}

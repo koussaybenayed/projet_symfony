@@ -1,0 +1,79 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Recherche de contrôles douaniers par pays{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recherche de contrôles douaniers par pays</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ path('app_douane_pays') }}" class="mb-4">
+                        <div class="input-group input-group-lg">
+                            <select name="pays" class="form-select" required>
+                                <option value="">Sélectionnez un pays</option>
+                                {% for pays in liste_pays %}
+                                    <option value="{{ pays }}" {{ selected_pays == pays ? 'selected' : '' }}>{{ pays }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search me-1"></i> Rechercher
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if selected_pays is defined and selected_pays and results is empty %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Aucun contrôle trouvé pour le pays <strong>{{ selected_pays }}</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if results is defined and results is not empty and selected_pays is defined %}
+                        <h4 class="mb-3">Contrôles douaniers en {{ selected_pays }}</h4>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Référence</th>
+                                        <th>Date</th>
+                                        <th>Livraison</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results %}
+                                        <tr>
+                                            <td>#{{ result.id_controle }}</td>
+                                            <td>{{ result.date_controle|date('d/m/Y') }}</td>
+                                            <td>#{{ result.livraison.id_livraisons }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ result.statut == 'Validé' ? 'success' : 
+                                                    (result.statut == 'En attente' ? 'warning' : 
+                                                    (result.statut == 'Rejeté' ? 'danger' : 'info')) }}">
+                                                    {{ result.statut }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{{ path('app_douane_details', {'id_controle': result.id_controle}) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i> Détails
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

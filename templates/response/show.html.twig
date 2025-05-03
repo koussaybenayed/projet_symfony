@@ -1,0 +1,53 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Response Details{% endblock %}
+
+{% block body %}
+    <h1>Response Details</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+         
+            </tr>
+            <tr>
+                <th>Response Text</th>
+                <td>{{ response.responseText }}</td>
+            </tr>
+            <tr>
+                <th>Created At</th>
+                <td>{{ response.createdAt ? response.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Reclamation Details</h2>
+
+    <table class="table">
+        <tbody>
+            <tr>
+             
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ response.reclamation.description }}</td>
+            </tr>
+            <tr>
+                <th>Date Reclamation</th>
+                <td>{{ response.reclamation.dateReclamation ? response.reclamation.dateReclamation|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ response.reclamation.status }}</td>
+            </tr>
+        </tbody>
+    </table>
+  <a href="{{ path('app_response_pdf', {'id': response.id}) }}" class="btn btn-danger">
+            <i class="fas fa-file-pdf"></i> Export PDF
+        </a>
+    <a href="{{ path('app_reclamation_index') }}" class="btn btn-secondary">Back to List</a>
+   
+
+   
+{% endblock %}
+    

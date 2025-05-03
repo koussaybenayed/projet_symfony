@@ -1,0 +1,125 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}New Reclamation{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .is-invalid { border-color: #dc3545; }
+        .invalid-feedback { color: #dc3545; }
+        #ocr-result { margin-top: 10px; }
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.2em;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': 'reclamation-form'}}) }}
+        
+            {# Description Field with OCR Support #}
+            <div class="mb-3">
+                {{ form_label(form.description, 'Description (or upload image for OCR)', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.description, {
+                    'attr': {
+                        'class': 'form-control' ~ (form.description.vars.errors ? ' is-invalid' : ''),
+                        'id': 'description-text',
+                        'rows': 5
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.description) }}
+                </div>
+                
+                {# OCR Image Upload #}
+                <div class="mt-3">
+                    <label for="ocr-image" class="form-label">Upload Image for OCR:</label>
+                    <input type="file" id="ocr-image" class="form-control" accept="image/*">
+                    <button type="button" id="run-ocr" class="btn btn-secondary mt-2">
+                        <span id="ocr-button-text">Extract Text from Image</span>
+                        <span id="ocr-spinner" class="spinner-border spinner-border-sm d-none"></span>
+                    </button>
+                </div>
+                <div id="ocr-result" class="alert mt-2" style="display:none;"></div>
+            </div>
+
+            {# Rest of your form fields #}
+            {{ form_row(form.date_reclamation) }}
+            {{ form_row(form.status) }}
+            
+            <button type="submit" class="btn btn-primary">Submit</button>
+        {{ form_end(form) }}
+    </div>
+
+    {% block javascripts %}
+        <script>
+           document.addEventListener('DOMContentLoaded', function() {
+    // Get elements with multiple fallback options
+    const descriptionField = document.getElementById('description-text') || 
+                           document.querySelector('textarea[name*="description"]');
+    
+    const runOcrBtn = document.getElementById('run-ocr');
+    const fileInput = document.getElementById('ocr-image');
+    const resultDiv = document.getElementById('ocr-result');
+
+    // Debug: Check if elements exist
+    if (!descriptionField) {
+        console.error('Description field not found! Check your form rendering.');
+        return;
+    }
+    if (!runOcrBtn || !fileInput || !resultDiv) {
+        console.error('Other required elements missing');
+        return;
+    }
+
+    runOcrBtn.addEventListener('click', async function() {
+        resultDiv.style.display = 'none';
+        
+        if (!fileInput.files[0]) {
+            showResult("Please select an image first.", 'danger');
+            return;
+        }
+
+        // Show loading state
+        const btnText = runOcrBtn.innerHTML;
+        runOcrBtn.disabled = true;
+        runOcrBtn.innerHTML = 'Processing... <span class="spinner-border spinner-border-sm"></span>';
+
+        try {
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+
+            const response = await fetch('/ocr/extract-text', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            console.log('OCR Response:', data); // Debug
+            
+            if (data.text) {
+                descriptionField.value = data.text;
+                showResult("Text extracted successfully!", 'success');
+            } else {
+                throw new Error(data.error || 'OCR failed');
+            }
+        } catch (error) {
+            console.error('OCR Error:', error);
+            showResult("Error: " + error.message, 'danger');
+        } finally {
+            runOcrBtn.disabled = false;
+            runOcrBtn.innerHTML = btnText;
+        }
+    });
+
+    function showResult(message, type) {
+        resultDiv.textContent = message;
+        resultDiv.className = `alert alert-${type}`;
+        resultDiv.style.display = 'block';
+    }
+});
+        </script>
+    {% endblock %}
+{% endblock %}

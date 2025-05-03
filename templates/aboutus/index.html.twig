@@ -1,0 +1,299 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}À propos de NaviFly{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .about-hero {
+            background: linear-gradient(135deg, #177dff 0%, #0047b3 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(23, 125, 255, 0.15);
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #177dff;
+        }
+        .team-card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .avatar-lg {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #177dff 0%, #0047b3 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .benefit-item {
+            padding: 0.5rem 0;
+        }
+        .contact-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+        }
+        .section-title {
+            position: relative;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        .section-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: #177dff;
+        }
+        .stats-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #177dff 0%, #0047b3 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 5px 15px rgba(23, 125, 255, 0.3);
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">À propos de TransportApp</h1>
+                <a href="#" class="btn btn-light btn-lg px-4">Démarrer l'essai gratuit</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <!-- Qui sommes-nous -->
+    <section class="mb-5 py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 text-center">
+                <h2 class="section-title d-inline-block">Qui sommes-nous ?</h2>
+                <p class="lead">
+                    TransportApp est une plateforme complète de gestion logistique conçue pour révolutionner la manière dont les entreprises gèrent
+                    les livraisons, le service client et les opérations financières.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notre Mission -->
+    <section class="mb-5 py-4 bg-light rounded-3">
+        <div class="container">
+            <h2 class="section-title">Notre Mission</h2>
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <p class="fs-5">
+                        Transformer la logistique transport grâce à une technologie qui simplifie les opérations, améliore la satisfaction client
+                        et stimule la croissance des entreprises.
+                    </p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Innovation continue</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Satisfaction client</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Solutions adaptées</li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <img src="{{ asset('images/mission.png') }}" alt="Notre Mission" class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fonctionnalités -->
+    <section class="mb-5 py-4">
+        <h2 class="section-title text-center mb-5">Fonctionnalités Clés</h2>
+        <div class="row g-4">
+            {% for feature in [
+                {icon: 'truck', title: 'Gestion des Livraisons', desc: 'Suivi en temps réel des colis et planification des livraisons'},
+                {icon: 'comment-alt', title: 'Système de Réclamations', desc: 'Soumission et résolution simplifiées des réclamations'},
+                {icon: 'percent', title: 'Gestion des Remises', desc: 'Configurations flexibles des réductions promotionnelles'},
+                {icon: 'file-invoice-dollar', title: 'Système de Facturation', desc: 'Facturation automatisée et suivi des paiements'}
+            ] %}
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-{{ feature.icon }}"></i>
+                        </div>
+                        <h5 class="card-title">{{ feature.title }}</h5>
+                        <p class="card-text">{{ feature.desc }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Notre Équipe -->
+    <section class="mb-5 py-4 bg-light rounded-3">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">Notre Équipe</h2>
+            <div class="row g-4 justify-content-center">
+                {% for member in team_members %}
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="team-card card h-100">
+                        <div class="card-body">
+                            <div class="avatar-lg">
+                                {{ member.initial }}
+                            </div>
+                            <h6 class="card-title mb-1">{{ member.name }}</h6>
+                            <p class="card-text small text-muted">{{ member.role }}</p>
+                            <div class="social-links mt-2">
+                                <a href="#" class="text-muted me-2"><i class="fab fa-linkedin"></i></a>
+                                <a href="#" class="text-muted"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Pourquoi nous choisir -->
+    <section class="mb-5 py-4">
+        <h2 class="section-title text-center mb-5">Pourquoi choisir TransportApp ?</h2>
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <h3 class="h4 mb-4">Nos avantages</h3>
+                        <ul class="list-unstyled">
+                            {% for benefit in [
+                                'Traitement des livraisons 30% plus rapide',
+                                'Réduction de 75% du temps de résolution des réclamations',
+                                'Configurations de remises flexibles',
+                                'Facturation automatisée avec multiples options de paiement',
+                                'Support client 24/7'
+                            ] %}
+                            <li class="benefit-item py-2 border-bottom">
+                                <i class="fas fa-check-circle text-success me-2"></i>{{ benefit }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card border-0 h-100" style="background: none; box-shadow: none;">
+                    <div class="card-body p-4 text-center">
+                        <div class="row">
+                            <div class="col-6 mb-4">
+                                <div class="stats-circle">
+                                    <div class="stats-number">150+</div>
+                                    <div class="stats-label">Clients</div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-4">
+                                <div class="stats-circle">
+                                    <div class="stats-number">95%</div>
+                                    <div class="stats-label">Réussite</div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-4">
+                                <div class="stats-circle">
+                                    <div class="stats-number">24/7</div>
+                                    <div class="stats-label">Support</div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-4">
+                                <div class="stats-circle">
+                                    <div class="stats-number">30%</div>
+                                    <div class="stats-label">Efficacité</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="py-4 mb-5">
+        <div class="contact-card">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="section-title">Contactez-nous</h2>
+                    <div class="d-flex align-items-start mb-4">
+                        <i class="fas fa-envelope fs-4 text-primary me-3 mt-1"></i>
+                        <div>
+                            <h5 class="h6 mb-1">Email</h5>
+                            <a href="mailto:{{ contact_email }}" class="text-decoration-none">{{ contact_email }}</a>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-4">
+                        <i class="fas fa-phone fs-4 text-primary me-3 mt-1"></i>
+                        <div>
+                            <h5 class="h6 mb-1">Téléphone</h5>
+                            <a href="tel:{{ phone_number|replace({' ': ''}) }}" class="text-decoration-none">{{ +21654420080 }}</a>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-map-marker-alt fs-4 text-primary me-3 mt-1"></i>
+                        <div>
+                            <h5 class="h6 mb-1">Adresse</h5>
+                            <p class="mb-0">{{ company_address }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-4 mt-lg-0">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12785.71595911239!2d10.179532715625!3d36.86291380000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12e2cb7454c6ed51%3A0x683b7ab5661ebf0!2sAriana%2C%20Tunisie!5e0!3m2!1sfr!2sus!4v1620000000000!5m2!1sfr!2sus" 
+                                allowfullscreen="" loading="lazy" class="rounded shadow"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+   {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+
+{# Affichage des erreurs globales, s'il y en a #}
+{% for error in form.vars.errors %}
+    <div class="alert alert-danger">{{ error.message }}</div>
+{% endfor %}
+
+{# Vérification et affichage pour le champ "code" #}
+{% if form.code is defined %}
+    {{ form_row(form.code) }} {# Affiche le champ "code" #}
+    {{ form_errors(form.code) }} {# Affiche les erreurs liées au champ "code" #}
+{% endif %}
+
+{# Vérification et affichage pour le champ "discountAmount" #}
+{% if form.discountAmount is defined %}
+    {{ form_row(form.discountAmount) }} {# Affiche le champ "discountAmount" #}
+    {{ form_errors(form.discountAmount) }} {# Affiche les erreurs liées au champ "discountAmount" #}
+{% endif %}
+
+{# Vérification et affichage pour le champ "expirationDate" #}
+{% if form.expirationDate is defined %}
+    {{ form_row(form.expirationDate) }} {# Affiche le champ "expirationDate" #}
+    {{ form_errors(form.expirationDate) }} {# Affiche les erreurs liées au champ "expirationDate" #}
+{% endif %}
+
+{# Vérification et affichage pour le champ "conditionText" #}
+{% if form.conditionText is defined %}
+    {{ form_row(form.conditionText) }} {# Affiche le champ "conditionText" #}
+    {{ form_errors(form.conditionText) }} {# Affiche les erreurs liées au champ "conditionText" #}
+{% endif %}
+
+{# Vérification et affichage pour le champ "createdAt" #}
+{% if form.createdAt is defined %}
+    {{ form_row(form.createdAt) }} {# Affiche le champ "createdAt" #}
+    {{ form_errors(form.createdAt) }} {# Affiche les erreurs liées au champ "createdAt" #}
+{% endif %}
+
+<!-- Bouton de soumission pour le formulaire -->
+<button type="submit" class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+
+{{ form_end(form) }}

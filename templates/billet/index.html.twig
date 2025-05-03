@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des billets{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <!-- Section Statistiques -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h4 mb-0"><i class="fas fa-chart-pie me-2"></i>Statistiques des billets</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="h5 text-center mb-3">Répartition par destination</h4>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="statsChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>DESTINATION</th>
+                                            <th>NOMBRE</th>
+                                            <th>POURCENTAGE</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for stat in stats %}
+                                        <tr>
+                                            <td>{{ stat.destination|capitalize }}</td>
+                                            <td>{{ stat.count }}</td>
+                                            <td>{{ (stat.count/totalBillets*100)|round(1) }}%</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Liste des billets -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h2 class="h4 mb-0"><i class="fas fa-ticket-alt me-2"></i>Liste des billets</h2>
+                    <a href="{{ path('app_billet_new') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus me-1"></i> Ajouter un billet
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date départ</th>
+                                    <th>Compagnie</th>
+                                    <th>Destination</th>
+                                    <th>Prix</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for billet in billets %}
+                                <tr>
+                                    <td>{{ billet.id }}</td>
+                                    <td>{{ billet.dateDepart|date('d/m/Y') }}</td>
+                                    <td>{{ billet.compagnie }}</td>
+                                    <td>{{ billet.destination }}</td>
+                                    <td>{{ billet.prix }} €</td>
+                                    <td>
+                                        <span class="badge bg-{{ billet.statut == 'Confirmé' ? 'success' : (billet.statut == 'Annulé' ? 'danger' : 'warning') }}">
+                                            {{ billet.statut }}
+                                        </span>
+                                    </td>
+                                     <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="{{ path('app_billet_show', {'id': billet.id}) }}">
+                                                <i class="bx bx-show me-1"></i> Voir
+                                            </a>
+                                            <a class="dropdown-item" href="{{ path('app_billet_edit', {'id': billet.id}) }}">
+                                                <i class="bx bx-edit-alt me-1"></i> Modifier
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">Aucun billet trouvé</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration du graphique
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: {{ stats|map(stat => stat.destination)|json_encode|raw }},
+            datasets: [{
+                data: {{ stats|map(stat => stat.count)|json_encode|raw }},
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+                    '#9966FF', '#FF9F40', '#8AC24A', '#FF5722'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw} (${Math.round(context.raw/{{ totalBillets }}*100)}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

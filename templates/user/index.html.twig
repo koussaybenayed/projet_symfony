@@ -1,0 +1,601 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">User Management</h5>
+            <div>
+                <a class="btn btn-primary" href="{{ path('app_user_new') }}">
+                    <i class="tf-icons bx bx-plus"></i> Create New User
+                </a>
+                <a class="btn btn-danger" href="{{ path('app_user_export_pdf') }}">
+                    <i class="tf-icons bx bx-file-pdf"></i> Export to PDF
+                </a>
+            </div>
+        </div>
+    
+        <div class="card-body">
+            <div class="mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Advanced Search</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="search-criteria">Search Criteria</label>
+                                <select id="search-criteria" class="form-select">
+                                    <option value="">Select a criteria</option>
+                                    <option value="username">Username</option>
+                                    <option value="firstname">First Name</option>
+                                    <option value="lastname">Last Name</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="search-value">Search Value</label>
+                                <input type="text" id="search-value" class="form-control" placeholder="Enter search value" disabled>
+                            </div>
+                            <div class="col-md-2 mb-3 d-flex align-items-end">
+                                <button id="clear-search" class="btn btn-secondary w-100">
+                                    <i class="tf-icons bx bx-reset"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div id="search-status" class="alert alert-info mt-2" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Sort Options</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort-criteria" id="sort-username" value="username">
+                                <label class="form-check-label" for="sort-username">
+                                    Sort by Username
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort-criteria" id="sort-firstname" value="firstname">
+                                <label class="form-check-label" for="sort-firstname">
+                                    Sort by First Name
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort-criteria" id="sort-lastname" value="lastname">
+                                <label class="form-check-label" for="sort-lastname">
+                                    Sort by Last Name
+                                </label>
+                            </div>
+                            <div class="form-check ms-auto">
+                                <select id="sort-direction" class="form-select form-select-sm">
+                                    <option value="asc">Ascending (A-Z)</option>
+                                    <option value="desc">Descending (Z-A)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="users-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="username">USERNAME <i class="sort-icon bx"></i></th>
+                            <th>EMAIL</th>
+                            <th>PASSWORD</th>
+                            <th class="sortable" data-sort="firstname">FIRST NAME <i class="sort-icon bx"></i></th>
+                            <th class="sortable" data-sort="lastname">LAST NAME <i class="sort-icon bx"></i></th>
+                            <th>BIRTHDAY</th>
+                            <th>GENDER</th>
+                            <th>PICTURE</th>
+                            <th>PHONE</th>
+                            <th>LEVEL</th>
+                            <th>ROLE</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                    {% for user in pagination %}
+                        <tr>
+                            <td>{{ user.userUsername }}</td>
+                            <td>{{ user.userEmail }}</td>
+                            <td>{{ user.userPassword }}</td>
+                            <td>{{ user.userFirstname }}</td>
+                            <td>{{ user.userLastname }}</td>
+                            <td>{{ user.userBirthday ? user.userBirthday|date('Y-m-d') : '' }}</td>
+                            <td>{{ user.userGender }}</td>
+                            <td class="text-center">
+                                {% if user.userPicture %}
+                                    <img src="{{ asset('uploads/pictures/' ~ user.userPicture) }}" alt="Profile" class="rounded-circle" width="40" height="40">
+                                {% else %}
+                                    <span class="badge bg-label-secondary">No Image</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.userPhonenumber }}</td>
+                            <td>{{ user.userLevel }}</td>
+                            <td>{{ user.userRole }}</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a class="btn btn-sm btn-info" href="{{ path('app_user_show', {'user_id': user.getUserId()}) }}">
+                                        <i class="tf-icons bx bx-show"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-primary" href="{{ path('app_user_edit', {'user_id': user.getUserId()}) }}">
+                                        <i class="tf-icons bx bx-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="12" class="text-center">No users found.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="navigation d-flex justify-content-center mt-4">
+                {{ knp_pagination_render(pagination, 'pagination/pagination.html.twig') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const criteriaSelect = document.getElementById('search-criteria');
+            const valueInput = document.getElementById('search-value');
+            const clearBtn = document.getElementById('clear-search');
+            const tableBody = document.getElementById('users-table-body');
+            const searchStatus = document.getElementById('search-status');
+            const sortableHeaders = document.querySelectorAll('.sortable');
+            const sortRadios = document.querySelectorAll('input[name="sort-criteria"]');
+            const sortDirection = document.getElementById('sort-direction');
+            
+            // Search URL from Symfony route
+            const searchUrl = "{{ path('app_user_api_search') }}";
+            
+            // Use the same search URL for sorting (we'll modify the controller to handle sort parameters)
+            const sortUrl = "{{ path('app_user_api_search') }}";
+            
+            // Current page for search pagination
+            let currentSearchPage = 1;
+            const itemsPerPage = 5;
+            
+            // Current sort state
+            let currentSortCriteria = '';
+            let currentSortDirection = 'asc';
+            
+            // Add event listeners
+            criteriaSelect.addEventListener('change', handleCriteriaChange);
+            valueInput.addEventListener('input', debounceSearch);
+            clearBtn.addEventListener('click', clearSearch);
+            
+            // Add sort event listeners
+            sortRadios.forEach(radio => {
+                radio.addEventListener('change', handleSortChange);
+            });
+            
+            sortDirection.addEventListener('change', function() {
+                if (currentSortCriteria) {
+                    currentSortDirection = this.value;
+                    performSort(currentSortCriteria, currentSortDirection);
+                }
+            });
+            
+            // Add click handlers to sortable headers
+            sortableHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const criteria = this.getAttribute('data-sort');
+                    
+                    // Update the radio buttons to match the header clicked
+                    document.getElementById(`sort-${criteria}`).checked = true;
+                    
+                    // Toggle direction if clicking the same header again
+                    if (currentSortCriteria === criteria) {
+                        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                        sortDirection.value = currentSortDirection;
+                    } else {
+                        currentSortCriteria = criteria;
+                        currentSortDirection = 'asc';
+                        sortDirection.value = 'asc';
+                    }
+                    
+                    performSort(criteria, currentSortDirection);
+                    updateSortIcons(criteria, currentSortDirection);
+                });
+            });
+            
+            // Debounce function to limit API calls
+            let debounceTimer;
+            function debounceSearch() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => performSearch(1), 300); // Reset to page 1 on new search
+            }
+            
+            // Enable/disable search input based on criteria selection
+            function handleCriteriaChange() {
+                if (criteriaSelect.value) {
+                    valueInput.disabled = false;
+                    valueInput.focus();
+                    valueInput.placeholder = `Search by ${criteriaSelect.options[criteriaSelect.selectedIndex].text}...`;
+                    
+                    if (valueInput.value.trim()) {
+                        performSearch(1); // Reset to page 1 on criteria change
+                    }
+                } else {
+                    valueInput.disabled = true;
+                    valueInput.value = '';
+                    valueInput.placeholder = 'Select a criteria first';
+                    resetToOriginalData();
+                }
+            }
+            
+            // Handle sort criteria change
+            function handleSortChange(e) {
+                const criteria = e.target.value;
+                currentSortCriteria = criteria;
+                performSort(criteria, currentSortDirection);
+                updateSortIcons(criteria, currentSortDirection);
+            }
+            
+            // Update sort icons in table headers
+            function updateSortIcons(activeCriteria, direction) {
+                // Reset all icons
+                document.querySelectorAll('.sort-icon').forEach(icon => {
+                    icon.className = 'sort-icon bx';
+                });
+                
+                // Set active icon
+                const activeHeader = document.querySelector(`.sortable[data-sort="${activeCriteria}"]`);
+                if (activeHeader) {
+                    const icon = activeHeader.querySelector('.sort-icon');
+                    icon.className = `sort-icon bx ${direction === 'asc' ? 'bx-sort-up' : 'bx-sort-down'}`;
+                }
+            }
+            
+            // Perform sorting
+            function performSort(criteria, direction) {
+                showStatus('info', `Sorting by ${criteria} in ${direction === 'asc' ? 'ascending' : 'descending'} order...`);
+                
+                // If we already have search results, sort them client-side
+                if (valueInput.value.trim() && !valueInput.disabled) {
+                    performSearch(currentSearchPage);
+                    return;
+                }
+                
+                // Show loading indicator
+                tableBody.innerHTML = '<tr><td colspan="12" class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+                
+                // Build URL with parameters
+                const url = `${sortUrl}?criteria=${encodeURIComponent(criteria)}&direction=${encodeURIComponent(direction)}&page=${currentSearchPage}&limit=${itemsPerPage}`;
+                
+                // Make AJAX request
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Sort failed. Server returned ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        updateTableWithPagination(data);
+                        showStatus('success', `Users sorted by ${criteria} in ${direction === 'asc' ? 'ascending' : 'descending'} order`);
+                    })
+                    .catch(error => {
+                        console.error('Sort error:', error);
+                        tableBody.innerHTML = `<tr><td colspan="12" class="text-center py-3 text-danger">${error.message}</td></tr>`;
+                        showStatus('danger', `Error: ${error.message}`);
+                    });
+            }
+            
+            // Reset table to original data
+            function resetToOriginalData() {
+                showStatus('info', 'Resetting to original data...');
+                window.location.href = "{{ path('app_user_index') }}";
+            }
+            
+            // Execute the search with pagination
+            function performSearch(page = currentSearchPage) {
+                currentSearchPage = page;
+                const criteria = criteriaSelect.value;
+                const value = valueInput.value.trim();
+                
+                if (!criteria || !value) {
+                    if (!value) resetToOriginalData();
+                    return;
+                }
+                
+                // Show loading indicator
+                tableBody.innerHTML = '<tr><td colspan="12" class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+                showStatus('info', `Searching for ${criteria} containing "${value}"...`);
+                
+                // Build URL with parameters including sort if active
+                let url = `${searchUrl}?criteria=${encodeURIComponent(criteria)}&value=${encodeURIComponent(value)}&page=${page}&limit=${itemsPerPage}`;
+                
+                if (currentSortCriteria) {
+                    url += `&sortCriteria=${encodeURIComponent(currentSortCriteria)}&sortDirection=${encodeURIComponent(currentSortDirection)}`;
+                }
+                
+                // Make AJAX request
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Search failed. Server returned ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        updateTableWithPagination(data);
+                        showStatus('success', `Found ${data.totalCount} users matching "${value}" in ${criteria}`);
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        tableBody.innerHTML = `<tr><td colspan="12" class="text-center py-3 text-danger">${error.message}</td></tr>`;
+                        showStatus('danger', `Error: ${error.message}`);
+                    });
+            }
+            
+            // Update table with search results and pagination
+            function updateTableWithPagination(data) {
+                const { items, totalCount, pageCount, currentPage, itemsPerPage } = data;
+                
+                if (items.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="12" class="text-center py-4">No users found matching your search criteria.</td></tr>';
+                    // Hide pagination if no results
+                    document.querySelector('.navigation').style.display = 'none';
+                    return;
+                }
+                
+                let html = '';
+                
+                items.forEach(user => {
+                    // Format picture display
+                    const pictureHtml = user.userPicture 
+                        ? `<img src="{{ asset('uploads/pictures/') }}/${user.userPicture}" alt="Profile" class="rounded-circle" width="40" height="40">` 
+                        : '<span class="badge bg-label-secondary">No Image</span>';
+                    
+                    html += `
+                        <tr>
+                            <td>${escapeHtml(user.userUsername || '')}</td>
+                            <td>${escapeHtml(user.userEmail || '')}</td>
+                            <td>${escapeHtml(user.userPassword || '')}</td>
+                            <td>${escapeHtml(user.userFirstname || '')}</td>
+                            <td>${escapeHtml(user.userLastname || '')}</td>
+                            <td>${escapeHtml(user.userBirthday || '')}</td>
+                            <td>${escapeHtml(user.userGender || '')}</td>
+                            <td class="text-center">${pictureHtml}</td>
+                            <td>${escapeHtml(user.userPhonenumber || '')}</td>
+                            <td>${escapeHtml(user.userLevel || '')}</td>
+                            <td>${escapeHtml(user.userRole || '')}</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a class="btn btn-sm btn-info" href="{{ path('app_user_show', {'user_id': 'PLACEHOLDER'}) }}".replace('PLACEHOLDER', user.userId)>
+                                        <i class="tf-icons bx bx-show"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-primary" href="{{ path('app_user_edit', {'user_id': 'PLACEHOLDER'}) }}".replace('PLACEHOLDER', user.userId)>
+                                        <i class="tf-icons bx bx-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+                
+                // Create client-side pagination for search results
+                renderSearchPagination(data);
+            }
+            
+            // Render pagination for search results
+            function renderSearchPagination(data) {
+                const { totalCount, pageCount, currentPage, itemsPerPage } = data;
+                const paginationContainer = document.querySelector('.navigation');
+                
+                if (pageCount <= 1) {
+                    paginationContainer.style.display = 'none';
+                    return;
+                }
+                
+                paginationContainer.style.display = 'flex';
+                
+                // Build pagination HTML
+                let paginationHtml = `
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                `;
+                
+                // First page
+                if (currentPage > 1) {
+                    paginationHtml += `
+                        <li class="page-item">
+                            <a class="page-link" href="#" data-page="1" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                    `;
+                } else {
+                    paginationHtml += `
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;&laquo;</span>
+                        </li>
+                    `;
+                }
+                
+                // Previous page
+                if (currentPage > 1) {
+                    paginationHtml += `
+                        <li class="page-item">
+                            <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    `;
+                } else {
+                    paginationHtml += `
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                    `;
+                }
+                
+                // Page numbers
+                // Calculate range of pages to show
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(pageCount, startPage + 4);
+                
+                // Adjust if we're near the end
+                if (endPage - startPage < 4) {
+                    startPage = Math.max(1, endPage - 4);
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    if (i === currentPage) {
+                        paginationHtml += `
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">${i}</span>
+                            </li>
+                        `;
+                    } else {
+                        paginationHtml += `
+                            <li class="page-item">
+                                <a class="page-link" href="#" data-page="${i}">${i}</a>
+                            </li>
+                        `;
+                    }
+                }
+                
+                // Next page
+                if (currentPage < pageCount) {
+                    paginationHtml += `
+                        <li class="page-item">
+                            <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    `;
+                } else {
+                    paginationHtml += `
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                    `;
+                }
+                
+                // Last page
+                if (currentPage < pageCount) {
+                    paginationHtml += `
+                        <li class="page-item">
+                            <a class="page-link" href="#" data-page="${pageCount}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    `;
+                } else {
+                    paginationHtml += `
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;&raquo;</span>
+                        </li>
+                    `;
+                }
+                
+                paginationHtml += `
+                        </ul>
+                    </nav>
+                    <div class="pagination-info text-center text-muted mt-2">
+                        <small>Affichage de ${(currentPage - 1) * itemsPerPage + 1} à 
+                        ${Math.min(currentPage * itemsPerPage, totalCount)} 
+                        sur ${totalCount} enregistrements</small>
+                    </div>
+                `;
+                
+                paginationContainer.innerHTML = paginationHtml;
+                
+                // Add event listeners to pagination links
+                const paginationLinks = paginationContainer.querySelectorAll('a.page-link');
+                paginationLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const page = parseInt(this.getAttribute('data-page'));
+                        performSearch(page);
+                    });
+                });
+            }
+            
+            // Helper function to display status messages
+            function showStatus(type, message) {
+                searchStatus.className = `alert alert-${type} mt-2`;
+                searchStatus.innerHTML = message;
+                searchStatus.style.display = 'block';
+            }
+            
+            // Hide status message
+            function hideStatus() {
+                searchStatus.style.display = 'none';
+            }
+            
+            // Helper function to escape HTML
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+            
+            // Clear search fields and reset
+            function clearSearch() {
+                criteriaSelect.value = '';
+                valueInput.value = '';
+                valueInput.disabled = true;
+                valueInput.placeholder = 'Enter search value';
+                
+                // Reset sort options too
+                sortRadios.forEach(radio => {
+                    radio.checked = false;
+                });
+                sortDirection.value = 'asc';
+                currentSortCriteria = '';
+                currentSortDirection = 'asc';
+                
+                // Reset sort icons
+                document.querySelectorAll('.sort-icon').forEach(icon => {
+                    icon.className = 'sort-icon bx';
+                });
+                
+                resetToOriginalData();
+            }
+            
+            // Add CSS for sortable headers
+            const style = document.createElement('style');
+            style.textContent = `
+                .sortable {
+                    cursor: pointer;
+                    user-select: none;
+                }
+                .sortable:hover {
+                    background-color: rgba(0,0,0,0.05);
+                }
+                .sort-icon {
+                    margin-left: 5px;
+                    font-size: 16px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+{% endblock %}

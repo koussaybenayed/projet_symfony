@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}➕ Nouvelle Livraison{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div class="page-btn">
+            <a href="{{ path('app_livraison_index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> ↩️ Retour à la liste
+            </a>
+        </div>
+        <div class="page-title">
+            <h4><i class="fas fa-plus-circle me-2"></i> ➕ Créer une nouvelle livraison</h4>
+            <h6>📝 Remplissez le formulaire pour ajouter une nouvelle livraison</h6>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-8 offset-lg-2">
+                    {{ include('livraison/_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

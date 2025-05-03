@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}NaviFly — Travel Made Elegant{% endblock %}</title>
+
+  {% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('plugins/bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/themify-icons/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
+
+    <style>
+      :root {
+        --primary: #0a2540;
+        --accent: #635bff;
+        --light: #f6f9fc;
+        --font-main: 'Inter', sans-serif;
+      }
+
+      body {
+        font-family: var(--font-main);
+        background-color: var(--light);
+        color: #1a1a1a;
+        margin: 0;
+        padding-top: 80px;
+      }
+
+      .navbar-stripe {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        background: linear-gradient(-45deg, #d53a9d, #6e61e9, #40c9ff, #ff6ec4);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        backdrop-filter: saturate(180%) blur(10px);
+      }
+
+      @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        font-size: 1.5rem;
+        color: white !important;
+        text-decoration: none;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        color: white !important;
+        margin: 0 10px;
+        transition: color 0.3s ease;
+      }
+
+      .nav-link:hover, .dropdown-toggle:hover {
+        color: #f1f1f1 !important;
+      }
+
+      .btn-accent {
+        background-color: #ffffff;
+        color: var(--accent);
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 500;
+        transition: background 0.3s ease;
+        text-decoration: none;
+      }
+
+      .btn-accent:hover {
+        background-color: #eeeeee;
+      }
+
+      footer {
+        padding: 3rem 1rem;
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.9rem;
+        border-top: 1px solid #dee2e6;
+      }
+
+      .container-max {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      .dropdown-menu {
+        min-width: 180px;
+      }
+    </style>
+  {% endblock %}
+</head>
+<body>
+
+<!-- Navigation -->
+<header class="navbar-stripe">
+  <div class="container-max d-flex justify-content-between align-items-center py-3">
+    <a class="navbar-brand" href="#">NaviFly</a>
+    <nav class="d-flex align-items-center">
+      {% set current = app.request.attributes.get('_route') %}
+      {% set nav_links = [
+        {'label': 'Douane', 'route': 'app_douane_index'},
+        {'label': 'Factures', 'route': 'app_facturisation_front_index'},
+        {'label': 'Réclamations', 'route': 'app_reclamation_index'},
+        {'label': 'Livraison', 'route': 'front_livraison_index'},
+        {'label': 'Billets', 'route': 'front_billet_list'},
+        {'label': 'Mes favoris', 'route': 'app_billet_favoris'},
+        {'label': 'Assistance', 'route': 'app_assistance_index'},
+        {'label': 'À propos', 'route': 'app_about_us'},
+        {'label': 'Log Out', 'route': 'app_logout'},
+        {'label': 'Edit Profile', 'route': 'app_user_edit1', 'params': {'user_id': app.user.getUserId }}
+      ] %}
+
+      {% for item in nav_links %}
+        <a class="nav-link {% if current == item.route %}fw-bold{% endif %}" 
+           href="{{ path(item.route, item.params ?? {}) }}">
+          {{ item.label }}
+        </a>
+      {% endfor %}
+
+      {% if app.user %}
+        <div class="dropdown ms-3">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="ti-user"></i> {{ app.user.userUsername }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
+            <li><a class="dropdown-item" href="{{ path('app_user_profile') }}"><i class="ti-user"></i> Profile</a></li>
+            <li><a class="dropdown-item" href="{{ path('app_user_edit1', {'user_id': app.user.getUserId}) }}"><i class="ti-pencil"></i> Edit Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="ti-power-off"></i> Logout</a></li>
+          </ul>
+        </div>
+      {% else %}
+        <a class="btn btn-accent ms-3" href="{{ path('app_login') }}">Login</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<!-- Main Body -->
+<main class="container-max my-5">
+  {% block body %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer>
+  © {{ "now"|date("Y") }} NaviFly. Tous droits réservés.
+</footer>
+
+{% block javascripts %}
+  <script src="{{ asset('plugins/jQuery/jquery.min.js') }}"></script>
+  <script src="{{ asset('plugins/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset('js/script.js') }}"></script>
+{% endblock %}
+</body>
+</html>
