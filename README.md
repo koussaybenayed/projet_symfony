@@ -27,7 +27,7 @@ Ce projet Symfony est une application web complète de **gestion du transport in
 
 ---
 
-## 🗂️ Table des Matières
+##  Table des Matières
 
 - [Contexte Académique](#contexte-académique)
 - [Description du Projet](#description-du-projet)
