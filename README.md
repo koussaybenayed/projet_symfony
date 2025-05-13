@@ -1,7 +1,7 @@
 
 # NAVIFLY: Transport International & Livraison de Colis - Symfony Project 
 
-##Contexte Académique
+Contexte Académique
 
 Ce projet a été réalisé dans le cadre du module de **Développement Web Avancé (Symfony)** au sein de la formation d’ingénieur à **Esprit School of Engineering** (Année universitaire : 2024-2025). Il s’inscrit dans les projets pratiques visant à maîtriser Symfony, l’architecture MVC, les formulaires dynamiques et la gestion des entités avec Doctrine ORM.
 
